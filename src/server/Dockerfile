@@ -7,7 +7,7 @@ ENV UV_NO_DEV=1
 WORKDIR /app
 RUN uv sync --extra server
 EXPOSE 9000
-CMD 
+
 
 
 
