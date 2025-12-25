@@ -385,7 +385,7 @@ server = [
     { name = "faker" },
     { name = "fastapi", extra = ["standard"] },
     { name = "orjson" },
-    { name = "passlib" },
+    { name = "pwdlib" },
     { name = "pyjwt" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
@@ -405,7 +405,7 @@ requires-dist = [
     { name = "faker", marker = "extra == 'server'", specifier = ">=39.0.0" },
     { name = "fastapi", extras = ["standard"], marker = "extra == 'server'", specifier = ">=0.126.0" },
     { name = "orjson", marker = "extra == 'server'", specifier = ">=3.11.5" },
-    { name = "passlib", marker = "extra == 'server'", specifier = ">=1.7.4" },
+    { name = "pwdlib", marker = "extra == 'server'", specifier = ">=0.3.0" },
     { name = "pyartnet", marker = "extra == 'runner'", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "pyjwt", marker = "extra == 'server'", specifier = ">=2.10.1" },
@@ -536,21 +536,21 @@ wheels = [
 ]
 
 [[package]]
-name = "passlib"
-version = "1.7.4"
-source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
-sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/def/d50f72b65c540/passlib-1.7.4.tar.gz", hash = "sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04" }
-wheels = [
-    { url = "http://10.0.0.215:3141/root/pypi/+f/aa6/bca462b8d8bda/passlib-1.7.4-py2.py3-none-any.whl", hash = "sha256:aa6bca462b8d8bda89c70b382f0c298a20b5560af6cbfa2dce410c0a2fb669f1" },
-]
-
-[[package]]
 name = "pluggy"
 version = "1.6.0"
 source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
 sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/7dc/c130b76258d33/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3" }
 wheels = [
     { url = "http://10.0.0.215:3141/root/pypi/+f/e92/0276dd6813095/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746" },
+]
+
+[[package]]
+name = "pwdlib"
+version = "0.3.0"
+source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
+sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/6ca/30f9642a1467d/pwdlib-0.3.0.tar.gz", hash = "sha256:6ca30f9642a1467d4f5d0a4d18619de1c77f17dfccb42dd200b144127d3c83fc" }
+wheels = [
+    { url = "http://10.0.0.215:3141/root/pypi/+f/f86/c15c138858c09/pwdlib-0.3.0-py3-none-any.whl", hash = "sha256:f86c15c138858c09f3bba0a10984d4f9178158c55deaa72eac0210849b1a140d" },
 ]
 
 [[package]]

@@ -6,3 +6,8 @@ class DuplicateEntryError(ValueError):
 class InvalidPasswordError(ValueError):
     def __init__(self, message):
         super().__init__(message)
+
+
+class Unauthorised(ValueError):
+    def __init__(self, message):
+        super().__init__(message)

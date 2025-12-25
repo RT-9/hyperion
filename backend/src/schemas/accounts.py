@@ -59,3 +59,7 @@ class UserCreate(BaseModel):
     password_confirm: str = Field(
         ..., description="Must match the password.", examples=["StrongPassword1234!"]
     )
+
+class UserLogin(BaseModel):
+    username:str
+    password:str
