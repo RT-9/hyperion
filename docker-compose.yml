@@ -5,8 +5,10 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
-    env_file:
-      - server.env
+    environment:
+      - POSTGRES_USER=hyperion
+      - POSTGRES_PASSWORD=hyperion
+      - DATABASE=hyperion
     networks:
       - server_network
     shm_size: 128mb
@@ -21,8 +23,7 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
-    env_file: 
-      - server.env
+
     networks:
       - server_network
     ports:
