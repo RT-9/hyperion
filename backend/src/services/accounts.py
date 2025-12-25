@@ -128,7 +128,7 @@ class AccountService:
 
         return self.encode_jwt(sub=account.id)
 
-    def password_hash(self, password: str) -> str:
+    def password_hash(self, password) -> str:
         """
         Validate a password against the policy and return a secure hash.
 
@@ -143,7 +143,7 @@ class AccountService:
         raise InvalidPasswordError("Password did not meet password policy.")
 
     @staticmethod
-    def encode_jwt(sub: str | int) -> str:
+    def encode_jwt(sub) -> str:
         """
         Generate a JWT for the given subject.
 
