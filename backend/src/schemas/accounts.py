@@ -60,6 +60,7 @@ class UserCreate(BaseModel):
         ..., description="Must match the password.", examples=["StrongPassword1234!"]
     )
 
+
 class UserLogin(BaseModel):
-    username:str
-    password:str
+    username: str
+    password: str

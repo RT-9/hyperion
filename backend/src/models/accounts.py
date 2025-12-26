@@ -1,22 +1,11 @@
 import uuid
-from sqlalchemy import Column, String, ForeignKey, Table
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, ForeignKey, Table, Boolean, DateTime
+from sqlalchemy import UUID
+
 from sqlalchemy.orm import relationship
 from ..core.database import Base, TimestampMixin
 
-
-role_permissions = Table(
-    "role_permissions",
-    Base.metadata,
-    Column("role_id", ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True),
-    Column(
-        "permission_id",
-        ForeignKey("permissions.id", ondelete="CASCADE"),
-        primary_key=True,
-    ),
-)
-
-
+# Association table: Links Accounts to Roles
 account_roles = Table(
     "account_roles",
     Base.metadata,
@@ -27,53 +16,49 @@ account_roles = Table(
 )
 
 
-class Permission(Base):
-    """
-    Represent an individual granular permission within the system.
-
-    :param name: The unique identifier for the permission (e.g., 'user:write').
-    :param description: A human-readable description of what this permission allows.
-    """
-
-    __tablename__ = "permissions"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(64), unique=True, nullable=False, index=True)
-    description = Column(String(255), nullable=True)
-
-
 class Role(Base):
     """
-    Represent a group of permissions assigned to users.
+    Represent a security role assigned to accounts.
 
-    :param name: The unique name of the role (e.g., 'administrator').
-    :param permissions: A list of Permission objects associated with this role.
+    This model handles the simplest form of RBAC where access is determined
+    solely by the role name.
+
+    :param name: The unique name of the role (e.g. 'administrator', 'manager').
     """
 
     __tablename__ = "roles"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
     name = Column(String(64), unique=True, nullable=False)
-
-    permissions = relationship(
-        "Permission", secondary=role_permissions, backref="roles"
-    )
+    system_role = Column(Boolean, default=False, nullable=False)
 
 
 class Accounts(Base, TimestampMixin):
     """
-    Represent a user account with assigned roles and credentials.
+    Represent an individual user account with multiple possible roles.
 
-    :param username: Unique login name.
-    :param roles: A list of Role objects assigned to this account.
+    :param username: The unique identifier for the user.
+    :param roles: A collection of Role objects assigned to this account.
     """
 
     __tablename__ = "accounts"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, index=True, default=uuid.uuid4)
     username = Column(String(64), unique=True, index=True, nullable=False)
     password = Column(String(256), nullable=False)
     first_name = Column(String(128), nullable=False)
     last_name = Column(String(128), nullable=False)
 
     roles = relationship("Role", secondary=account_roles, backref="accounts")
+
+
+class UsedRefreshToken(Base):
+    """
+    Model to track used refresh tokens to prevent replay attacks.
+    """
+    __tablename__ = "used_refresh_tokens"
+
+    jti = Column(UUID, primary_key=True, index=True)
+    user_id = Column(ForeignKey(
+        "accounts.id", ondelete="CASCADE"), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
