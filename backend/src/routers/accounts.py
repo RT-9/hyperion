@@ -1,7 +1,11 @@
 from fastapi import Request
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyCookie
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    APIKeyCookie,
+)
 
 from ..core.database import get_db
 from ..services.accounts import AccountService
@@ -12,11 +16,13 @@ account_router = APIRouter(prefix="/api", tags=["accounts"])
 
 cookie_scheme = APIKeyCookie(name="access_token")
 
+
 @account_router.post("/accounts", response_model=UserResponse)
 async def post_create_account(account: UserCreate, session=Depends(get_db)):
     user_service = AccountService(session)
     try:
-        user = await user_service.create_user(account)
+        user = await user_service.create_user(account, "viewer")
+
     except DuplicateEntryError as e:
         raise HTTPException(409, detail=str(e))
     except InvalidPasswordError as e:
@@ -69,7 +75,7 @@ async def post_login(
             httponly=True,
             expires=refresh_token[1],
             secure=True,
-            samesite="lax"
+            samesite="lax",
         )
         response.set_cookie(
             "access_token",
@@ -77,7 +83,7 @@ async def post_login(
             httponly=True,
             expires=access_token[1],
             secure=True,
-            samesite="lax"
+            samesite="lax",
         )
         return response
     except Unauthorised as e:
@@ -91,10 +97,7 @@ async def post_login(
 
 
 @account_router.post("/accounts/refresh")
-async def post_refresh_token(
-    request: Request,
-    session=Depends(get_db)
-):
+async def post_refresh_token(request: Request, session=Depends(get_db)):
     """
     Refresh the session tokens using the refresh_token cookie.
 
@@ -125,7 +128,7 @@ async def post_refresh_token(
             httponly=True,
             expires=new_access[1],
             secure=True,
-            samesite="lax"
+            samesite="lax",
         )
         response.set_cookie(
             "refresh_token",
@@ -133,10 +136,10 @@ async def post_refresh_token(
             httponly=True,
             expires=new_refresh[1],
             secure=True,
-            samesite="lax"
+            samesite="lax",
         )
 
         return response
-    
+
     except Unauthorised as e:
         raise HTTPException(status_code=401, detail=str(e))

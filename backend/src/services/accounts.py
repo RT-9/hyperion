@@ -8,10 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core import settings
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
-from ..models.accounts import Accounts, UsedRefreshToken
+from ..models.accounts import Accounts, UsedRefreshToken, Role
 from ..schemas.accounts import UserCreate, UserGet, UserLogin
 import uuid
 import asyncio
+
 # Password policy: 8-64 chars, at least one uppercase, one lowercase, one digit, and one special char.
 PATTERN = re.compile(
     r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,64}$'
@@ -23,7 +24,6 @@ class AccountService:
     Service layer for managing user accounts, handling secure password hashing
     via pwdlib and JWT-based authorisation.
     """
-
 
     _refresh_counter = 0
     _counter_lock = asyncio.Lock()
@@ -38,7 +38,7 @@ class AccountService:
         """
         self.db = session
 
-    async def get_user(self, user: UserGet) -> Accounts | None:
+    async def get_user(self, user: UserGet):
         """
         Retrieve a user instance based on ID or username.
 
@@ -58,7 +58,9 @@ class AccountService:
         result = await self.db.execute(qry)
         return result.scalar_one_or_none()
 
-    async def create_user(self, user: UserCreate) -> Accounts:
+    async def create_user(
+        self, user: UserCreate, role_name: str | None = None
+    ) -> Accounts:
         """
         Register a new user and store their hashed password.
 
@@ -78,6 +80,13 @@ class AccountService:
             first_name=user.first_name,
             last_name=user.last_name,
         )
+        if role_name:
+            qry = select(Role).where(Role.name == role_name)
+            role = await self.db.execute(qry)
+            role = role.scalar_one_or_none()
+        if not role:
+            raise ValueError("Role not found")
+        account.roles.append(role)
 
         try:
             self.db.add(account)
@@ -86,6 +95,47 @@ class AccountService:
         except IntegrityError:
             await self.db.rollback()
             raise DuplicateEntryError("User already exists")
+
+        return account
+
+    async def add_role(self, user: UserGet, role_name: str) -> Accounts:
+        """
+        Assign a specific role to a user.
+
+        :param user: The criteria to search for the user (ID or username).
+        :type user: UserGet
+        :param role_name: The name of the role to assign.
+        :type role_name: str
+        :raises ValueError: If the role or the user is not found.
+        :return: The updated account instance.
+        :rtype: Accounts
+        """
+        # 1. Fetch the role instance correctly
+        role_qry = select(Role).where(Role.name == role_name)
+        role_result = await self.db.execute(role_qry)
+        role = role_result.scalar_one_or_none()
+
+        if not role:
+            raise ValueError(f"Role '{role_name}' not found.")
+
+        # 2. Fetch the user account
+        # Note: Ensure your get_user method doesn't raise scalar_one() errors
+        # if the user is missing; using scalar_one_or_none inside get_user is safer.
+        account = await self.get_user(user)
+        if not account:
+            raise ValueError("User not found.")
+
+        # 3. Check if the user already has the role to avoid duplicates
+        if role not in account.roles:
+            account.roles.append(role)
+
+            try:
+                await self.db.commit()
+                # Refresh to ensure the relationship state is updated
+                await self.db.refresh(account)
+            except Exception:
+                await self.db.rollback()
+                raise
 
         return account
 
@@ -100,7 +150,12 @@ class AccountService:
         :return: An encoded JWT string.
         :rtype: str
         """
-        qry = select(Accounts).where(Accounts.username == user.username.lower())
+        qry = (
+            select(Accounts)
+            .where(Accounts.username == user.username.lower())
+            .where(~Accounts.roles.any(Role.name == "suspended"))
+        )
+
         res = await self.db.execute(qry)
         account = res.scalar_one_or_none()
 
@@ -152,13 +207,14 @@ class AccountService:
         :rtype: tuple
         """
         try:
-            
             payload = self.decode_jwt(refresh_token)
 
             # Security check: Ensure this is a refresh token
             if payload.get("scope") != "refresh":
                 raise Unauthorised("Invalid token scope.")
-            qry = select(UsedRefreshToken).where(UsedRefreshToken.jti == uuid.UUID(payload.get("jti")))
+            qry = select(UsedRefreshToken).where(
+                UsedRefreshToken.jti == uuid.UUID(payload.get("jti"))
+            )
             res = await self.db.execute(qry)
             if res.scalar_one_or_none():
                 raise Unauthorised("Access denied. Token reuse.")
@@ -170,13 +226,12 @@ class AccountService:
             user = await self.get_user(UserGet(id=user_id))
             if not user:
                 raise Unauthorised("User not found.")
-            
 
             # Return new tokens (this implements Token Rotation)
             used_token = UsedRefreshToken(
                 jti=uuid.UUID(payload.get("jti")),
                 user_id=uuid.UUID(payload.get("sub")),
-                expires_at=datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+                expires_at=datetime.fromtimestamp(payload["exp"], tz=timezone.utc),
             )
             self.db.add(used_token)
             await self.db.commit()
@@ -184,13 +239,12 @@ class AccountService:
         except Exception as e:
             print(e)
             raise Unauthorised("Invalid or expired refresh token.")
-        
+
     async def delete_refresh_tokens(self):
         now = datetime.now(tz=timezone.utc)
         qry = delete(UsedRefreshToken).where(UsedRefreshToken.expires_at < now)
         await self.db.execute(qry)
         await self.db.commit()
-        
 
     @staticmethod
     def encode_jwt(sub):
@@ -214,29 +268,38 @@ class AccountService:
 
         # Access Token Payload
         access_payload = base_payload.copy()
-        access_payload.update({
-            "exp": now + timedelta(minutes=15, seconds=3),
-            "jti": str(uuid.uuid7()),
-            "scope": "access"  # Added to distinguish from refresh tokens
-        })
+        access_payload.update(
+            {
+                "exp": now + timedelta(minutes=15, seconds=3),
+                "jti": str(uuid.uuid7()),
+                "scope": "access",  # Added to distinguish from refresh tokens
+            }
+        )
 
         # Refresh Token Payload
         refresh_payload = base_payload.copy()
-        refresh_payload.update({
-            "exp": now + timedelta(days=7, seconds=3),
-            "jti": str(uuid.uuid7()),
-            "scope": "refresh"  # Crucial for the refresh_session check
-        })
+        refresh_payload.update(
+            {
+                "exp": now + timedelta(days=7, seconds=3),
+                "jti": str(uuid.uuid7()),
+                "scope": "refresh",  # Crucial for the refresh_session check
+            }
+        )
 
         return (
-            (encode(access_payload, key=settings.JWT_SECRET,
-             algorithm="HS512"), access_payload["exp"]),
-            (encode(refresh_payload, key=settings.JWT_SECRET,
-             algorithm="HS512"), refresh_payload["exp"])
+            (
+                encode(access_payload, key=settings.JWT_SECRET, algorithm="HS512"),
+                access_payload["exp"],
+            ),
+            (
+                encode(refresh_payload, key=settings.JWT_SECRET, algorithm="HS512"),
+                refresh_payload["exp"],
+            ),
         )
+
     @staticmethod
     def decode_jwt(token):
-        print("damn",token)
+        print("damn", token)
         return decode(
             token, settings.JWT_SECRET, algorithms=["HS512"], issuer="hyperion_backend"
         )

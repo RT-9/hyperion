@@ -1,5 +1,5 @@
 from .database import init_db, async_session_factory
-from ..models.accounts import Role,  UsedRefreshToken
+from ..models.accounts import Role, UsedRefreshToken
 import logging
 from datetime import datetime, timezone
 from sqlalchemy import delete, text
@@ -27,6 +27,7 @@ async def role_creation():
                 await db.rollback()
                 logger.warning(f"Role {role} already exists... Skipping...")
 
+
 async def delete_old_tokens():
     logger.info("Deleting old Refresh Tokens...")
     now = datetime.now(tz=timezone.utc)
@@ -40,17 +41,15 @@ async def setup_database_events():
     """
     Initialise MariaDB event scheduler and recurring cleanup tasks.
 
-    This function enables the global event scheduler and creates the 
+    This function enables the global event scheduler and creates the
     cleanup event if it does not already exist.
 
-    :raises Exception: If the database user lacks sufficient privileges 
+    :raises Exception: If the database user lacks sufficient privileges
                        to set global variables or create events.
     """
     logger.info("Initialising MariaDB event scheduler...")
     async with async_session_factory() as db:
         try:
-
-
             # Create the recurring event
             event_query = """
             CREATE EVENT IF NOT EXISTS discard_expired_refresh_tokens
@@ -66,8 +65,8 @@ async def setup_database_events():
         except Exception as e:
             await db.rollback()
             logger.error(f"Failed to setup MariaDB events: {e}")
-            logger.fatal(
-                "Ensure the DB user has 'EVENT' privileges.")
+            logger.fatal("Ensure the DB user has 'EVENT' privileges.")
+
 
 async def startup():
     await init_db()

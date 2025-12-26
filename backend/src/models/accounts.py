@@ -1,6 +1,7 @@
 import uuid
 from sqlalchemy import Column, String, ForeignKey, Table, Boolean, DateTime
 from sqlalchemy import UUID
+from datetime import datetime
 
 from sqlalchemy.orm import relationship
 from ..core.database import Base, TimestampMixin
@@ -13,6 +14,7 @@ account_roles = Table(
         "account_id", ForeignKey("accounts.id", ondelete="CASCADE"), primary_key=True
     ),
     Column("role_id", ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True),
+    Column("date_created", DateTime, default=datetime.now),
 )
 
 
@@ -56,9 +58,9 @@ class UsedRefreshToken(Base):
     """
     Model to track used refresh tokens to prevent replay attacks.
     """
+
     __tablename__ = "used_refresh_tokens"
 
     jti = Column(UUID, primary_key=True, index=True)
-    user_id = Column(ForeignKey(
-        "accounts.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False)
     expires_at = Column(DateTime, nullable=False)
