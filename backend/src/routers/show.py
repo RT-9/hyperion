@@ -7,6 +7,8 @@ import string
 from ..services.device_management import DeviceService
 from ..schemas.device_management import AuthenticateOTP
 from ..core.exc import Conflict, Unauthorised
+from ..core.dependencies import get_current_device
+from ..services.dmx_processor import DMXProcessor
 
 show_router = APIRouter(tags=["hyperion-dmx"])
 
@@ -33,9 +35,9 @@ async def post_authenticate_otp(auth_otp: AuthenticateOTP, db=Depends(get_db)):
 
 
 @show_router.websocket("/dmx")
-async def ws_show(websocket: WebSocket):
+async def ws_show(websocket: WebSocket, device=Depends(get_current_device)):
     await websocket.accept()
+    dmxp = DMXProcessor(websocket)
     while True:
-        data = await websocket.receive_bytes()
-        print(data)
-        return data
+        pass
+            
