@@ -15,24 +15,29 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from fastapi import APIRouter, Depends, status, HTTPException
+from ..schemas.fixtures import CreateFixtureType, CreateFixturePatch
+from ..services.fixture_service import FixtureService
 from ..core.database import get_db
-from ..core.security.access import require_programmer
-from ..schemas.show import CreateShow
-from ..services.shows import ShowService
-import logging
+from ..core.security.access import require_tech_lead
 
-show_router = APIRouter(tags=["show"])
-
-logger = logging.getLogger("AAAAAA")
+fixture_router = APIRouter(tags=["fixtures"])
 
 
-@show_router.post("/api/shows")
-async def post_create_show(
-    create_show: CreateShow,
+@fixture_router.post("/api/fixture-types")
+async def post_add_fixture(
+    new_fixture: CreateFixtureType,
     db=Depends(get_db),
-    current_user=Depends(require_programmer),
+    current_user=Depends(require_tech_lead),
 ):
-    logger.warning(current_user)
-    show_service = ShowService(db)
-    new_show = await show_service.create_showfile(create_show, current_user)
-    return new_show
+    fixture_service = FixtureService(db)
+    fixture = await fixture_service.create_fixture_type(new_fixture)
+    return fixture
+
+
+@fixture_router.post("/api/fixture")
+async def patch_fixture_endpoint(patch_data: CreateFixturePatch, db=Depends(get_db)):
+    service = FixtureService(db)
+    try:
+        return await service.patch_fixture(patch_data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

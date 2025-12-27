@@ -14,6 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from .core.redis_db import redis_manager
+from contextlib import asynccontextmanager
+from .routers.manufacturer import manufacturer_router
+from .routers.dmx import dmx_router
+from .routers.accounts import account_router
+from .routers.show import show_router
+from .routers.fixtures import fixture_router
+from .core.startup import startup
+from .core import settings
 from fastapi import FastAPI
 import uvicorn
 import logging
@@ -24,17 +33,25 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-from .core import settings
-from .core.startup import startup
-from .routers.accounts import account_router
-from .routers.show import show_router
 
-app = FastAPI(title="Hyperion DMX", debug=settings.DEBUG)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    redis_manager.connect()
+    yield
+
+    await redis_manager.close()
+
+
+app = FastAPI(title="Hyperion DMX", debug=settings.DEBUG, lifespan=lifespan)
 
 
 app.include_router(account_router)
 app.add_event_handler("startup", startup)
+app.include_router(dmx_router)
+app.include_router(manufacturer_router)
 app.include_router(show_router)
+app.include_router(fixture_router)
 if __name__ == "__main__":
     uvicorn.run(
         "src.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG

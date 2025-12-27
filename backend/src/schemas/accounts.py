@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from faker import Faker
 from datetime import datetime
 
-# Initialise Faker with British English locale as per your preference
+
 fake = Faker(locale=["en_GB"])
 
 # Regular expression for password strength

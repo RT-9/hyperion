@@ -212,6 +212,20 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+all = [
+    { name = "email-validator" },
+    { name = "fastapi-cli", extra = ["standard"] },
+    { name = "httpx" },
+    { name = "itsdangerous" },
+    { name = "jinja2" },
+    { name = "orjson" },
+    { name = "pydantic-extra-types" },
+    { name = "pydantic-settings" },
+    { name = "python-multipart" },
+    { name = "pyyaml" },
+    { name = "ujson" },
+    { name = "uvicorn", extra = ["standard"] },
+]
 standard = [
     { name = "email-validator" },
     { name = "fastapi-cli", extra = ["standard"] },
@@ -404,8 +418,10 @@ name = "hyperion"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "fastapi", extra = ["all"] },
     { name = "pydantic-settings" },
     { name = "pygount" },
+    { name = "redis" },
 ]
 
 [package.optional-dependencies]
@@ -438,6 +454,7 @@ requires-dist = [
     { name = "argon2-cffi", marker = "extra == 'server'", specifier = ">=25.1.0" },
     { name = "asyncmy", marker = "extra == 'server'", specifier = ">=0.2.10" },
     { name = "faker", marker = "extra == 'server'", specifier = ">=39.0.0" },
+    { name = "fastapi", extras = ["all"], specifier = ">=0.126.0" },
     { name = "fastapi", extras = ["standard"], marker = "extra == 'server'", specifier = ">=0.126.0" },
     { name = "orjson", marker = "extra == 'server'", specifier = ">=3.11.5" },
     { name = "pwdlib", marker = "extra == 'server'", specifier = ">=0.3.0" },
@@ -446,6 +463,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "pygount", specifier = ">=3.1.0" },
     { name = "pyjwt", marker = "extra == 'server'", specifier = ">=2.10.1" },
+    { name = "redis", specifier = ">=7.1.0" },
     { name = "sqlalchemy", marker = "extra == 'server'", specifier = ">=2.0.45" },
     { name = "uvicorn", marker = "extra == 'server'", specifier = ">=0.38.0" },
     { name = "websockets", marker = "extra == 'runner'", specifier = ">=15.0.1" },
@@ -475,6 +493,15 @@ source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
 sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/c76/315c77db06865/iniconfig-2.3.0.tar.gz", hash = "sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730" }
 wheels = [
     { url = "http://10.0.0.215:3141/root/pypi/+f/f63/1c04d2c48c52b/iniconfig-2.3.0-py3-none-any.whl", hash = "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12" },
+]
+
+[[package]]
+name = "itsdangerous"
+version = "2.2.0"
+source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
+sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/e00/50c0b7da1eea5/itsdangerous-2.2.0.tar.gz", hash = "sha256:e0050c0b7da1eea53ffaf149c0cfbb5c6e2e2b69c4bef22c81fa6eb73e5f6173" }
+wheels = [
+    { url = "http://10.0.0.215:3141/root/pypi/+f/c62/42fc49e35958c/itsdangerous-2.2.0-py3-none-any.whl", hash = "sha256:c6242fc49e35958c8b15141343aa660db5fc54d4f13a1db01a3f5891b98700ef" },
 ]
 
 [[package]]
@@ -804,6 +831,15 @@ wheels = [
 ]
 
 [[package]]
+name = "redis"
+version = "7.1.0"
+source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
+sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/b1c/c3cfa5a2cb9c2/redis-7.1.0.tar.gz", hash = "sha256:b1cc3cfa5a2cb9c2ab3ba700864fb0ad75617b41f01352ce5779dabf6d5f9c3c" }
+wheels = [
+    { url = "http://10.0.0.215:3141/root/pypi/+f/23c/52b208f92b561/redis-7.1.0-py3-none-any.whl", hash = "sha256:23c52b208f92b56103e17c5d06bdc1a6c2c0b3106583985a76a18f83b265de2b" },
+]
+
+[[package]]
 name = "rich"
 version = "14.2.0"
 source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
@@ -1001,6 +1037,36 @@ source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
 sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/de3/9c2ca5dc7b034/tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7" }
 wheels = [
     { url = "http://10.0.0.215:3141/root/pypi/+f/06a/47e5700f3081a/tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1" },
+]
+
+[[package]]
+name = "ujson"
+version = "5.11.0"
+source = { registry = "http://10.0.0.215:3141/root/pypi/+simple/" }
+sdist = { url = "http://10.0.0.215:3141/root/pypi/+f/e20/4ae6f909f099b/ujson-5.11.0.tar.gz", hash = "sha256:e204ae6f909f099ba6b6b942131cee359ddda2b6e4ea39c12eb8b991fe2010e0" }
+wheels = [
+    { url = "http://10.0.0.215:3141/root/pypi/+f/657/24738c73645db/ujson-5.11.0-cp314-cp314-macosx_10_13_x86_64.whl", hash = "sha256:65724738c73645db88f70ba1f2e6fb678f913281804d5da2fd02c8c5839af302" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/291/13c003ca33ab7/ujson-5.11.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:29113c003ca33ab71b1b480bde952fbab2a0b6b03a4ee4c3d71687cdcbd1a29d" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/c44/c703842024d79/ujson-5.11.0-cp314-cp314-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:c44c703842024d796b4c78542a6fcd5c3cb948b9fc2a73ee65b9c86a22ee3638" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/e75/0c436fb90edf8/ujson-5.11.0-cp314-cp314-manylinux_2_24_i686.manylinux_2_28_i686.whl", hash = "sha256:e750c436fb90edf85585f5c62a35b35082502383840962c6983403d1bd96a02c" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/f27/8b31a7c52eb09/ujson-5.11.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f278b31a7c52eb0947b2db55a5133fbc46b6f0ef49972cd1a80843b72e135aba" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/ab2/cb8351d976e78/ujson-5.11.0-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:ab2cb8351d976e788669c8281465d44d4e94413718af497b4e7342d7b2f78018" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/090/b4d11b380ae25/ujson-5.11.0-cp314-cp314-musllinux_1_2_i686.whl", hash = "sha256:090b4d11b380ae25453100b722d0609d5051ffe98f80ec52853ccf8249dfd840" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/800/17e870d882d55/ujson-5.11.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:80017e870d882d5517d28995b62e4e518a894f932f1e242cbc802a2fd64d365c" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/1d6/63b96eb34c933/ujson-5.11.0-cp314-cp314-win32.whl", hash = "sha256:1d663b96eb34c93392e9caae19c099ec4133ba21654b081956613327f0e973ac" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/849/e65b696f0d242/ujson-5.11.0-cp314-cp314-win_amd64.whl", hash = "sha256:849e65b696f0d242833f1df4182096cedc50d414215d1371fca85c541fbff629" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/e73/df8648c9470af/ujson-5.11.0-cp314-cp314-win_arm64.whl", hash = "sha256:e73df8648c9470af2b6a6bf5250d4744ad2cf3d774dcf8c6e31f018bdd04d764" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/de6/e88f62796372f/ujson-5.11.0-cp314-cp314t-macosx_10_13_x86_64.whl", hash = "sha256:de6e88f62796372fba1de973c11138f197d3e0e1d80bcb2b8aae1e826096d433" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/49e/56ef8066f11b8/ujson-5.11.0-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:49e56ef8066f11b80d620985ae36869a3ff7e4b74c3b6129182ec5d1df0255f3" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/1a3/25fd2c3a056cf/ujson-5.11.0-cp314-cp314t-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1a325fd2c3a056cf6c8e023f74a0c478dd282a93141356ae7f16d5309f5ff823" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/a0a/f6574fc1d9d53/ujson-5.11.0-cp314-cp314t-manylinux_2_24_i686.manylinux_2_28_i686.whl", hash = "sha256:a0af6574fc1d9d53f4ff371f58c96673e6d988ed2b5bf666a6143c782fa007e9" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/10f/29e71ecf4ecd9/ujson-5.11.0-cp314-cp314t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:10f29e71ecf4ecd93a6610bd8efa8e7b6467454a363c3d6416db65de883eb076" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/1a0/a9b76a89827a5/ujson-5.11.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:1a0a9b76a89827a592656fe12e000cf4f12da9692f51a841a4a07aa4c7ecc41c" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/b16/930f6a0753cdc/ujson-5.11.0-cp314-cp314t-musllinux_1_2_i686.whl", hash = "sha256:b16930f6a0753cdc7d637b33b4e8f10d5e351e1fb83872ba6375f1e87be39746" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/04c/41afc195fd477/ujson-5.11.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:04c41afc195fd477a59db3a84d5b83a871bd648ef371cf8c6f43072d89144eef" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/aa6/d7a5e09217ff9/ujson-5.11.0-cp314-cp314t-win32.whl", hash = "sha256:aa6d7a5e09217ff93234e050e3e380da62b084e26b9f2e277d2606406a2fc2e5" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/480/55e1061c1bb1f/ujson-5.11.0-cp314-cp314t-win_amd64.whl", hash = "sha256:48055e1061c1bb1f79e75b4ac39e821f3f35a9b82de17fce92c3140149009bec" },
+    { url = "http://10.0.0.215:3141/root/pypi/+f/119/4b943e951092d/ujson-5.11.0-cp314-cp314t-win_arm64.whl", hash = "sha256:1194b943e951092db611011cb8dbdb6cf94a3b816ed07906e14d3bc6ce0e90ab" },
 ]
 
 [[package]]
