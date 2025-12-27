@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from ...core.database import Base
-from sqlalchemy import Column, UUID, Integer, String, Float, ForeignKey, Enum
+from sqlalchemy import Column, UUID, Integer, String, Float, ForeignKey, Enum, Boolean
 from sqlalchemy.orm import relationship
 import uuid
 import enum
@@ -24,6 +24,13 @@ import enum
 class TriggerType(enum.Enum):
     MANUAL = "manual"
     FOLLOW = "follow"
+
+
+class EasingProfile(enum.Enum):
+    LINEAR = "linear"
+    S_CURVE = "s_curve"
+    EASE_IN = "ease_in"
+    EASE_OUT = "ease_out"
 
 
 class Cue(Base):
@@ -38,7 +45,10 @@ class Cue(Base):
     label = Column(String(64))
     fade_in = Column(Float, default=2.0)
     trigger = Column(Enum(TriggerType), default=TriggerType.MANUAL)
-
+    trigger_value = Column(Float, default=0.0)
+    easing = Column(Enum(EasingProfile), default=EasingProfile.LINEAR)
+    next_cue_id = Column(UUID, ForeignKey("cues.id"), nullable=True)
+    is_loop_end = Column(Boolean, default=False)
     scene = relationship("Scene", back_populates="cues")
-
+    show = relationship("Show", back_populates="cues")
     effects = relationship("CueEffect", backref="cue", cascade="all, delete-orphan")

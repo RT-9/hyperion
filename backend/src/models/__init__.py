@@ -26,3 +26,8 @@ from .shows import Show
 from .fixtures import FixtureType, FixtureChannel, Fixture
 
 # Damit sind alle Klassen einmal geladen und bei "Base" registriert.
+from .shows import Show, ShowAccess
+from .dmx.scenes import Scene
+from .dmx.cues import Cue
+from .dmx.effects import CueEffect
+from .dmx.effects import EffectTemplate

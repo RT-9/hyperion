@@ -32,3 +32,4 @@ class Scene(Base):
     dmx_data = Column(JSON, default=dict)
 
     cues = relationship("Cue", back_populates="scene")
+    show = relationship("Show", back_populates="scenes")

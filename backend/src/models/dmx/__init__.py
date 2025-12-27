@@ -14,3 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
+# Falls du FixtureGroups referenzierst (in CueEffect), muss das auch hier rein:
+# from .dmx.fixtures import Fixture, FixtureGroup
