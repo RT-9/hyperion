@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import IntegrityError
 from ..schemas.manufacturer import CreateManufacturer
-from ..models.shows import Manufacturer
+from ..models.fixtures import Manufacturer
 
 
 class FixtureService:

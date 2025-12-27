@@ -2,7 +2,7 @@
 # Hyperion
 
 ![License](https://img.shields.io/badge/license-GPLv3%2B-blue.svg)
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Python](https://img.shields.io/badge/python-3.14%2B-blue)
 ![Frontend](https://img.shields.io/badge/frontend-Svelte-orange)
 ![Status](https://img.shields.io/badge/status-Alpha-red)
 
@@ -55,6 +55,14 @@ npm run dev
 Hyperion is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License version 3** or (at your option) any later version.
 
 See [LICENSE](https://www.google.com/search?q=LICENSE) for more details.
+
+## FAQ
+
+### 1 Why Python 3.14?
+
+Why not? Running $\pi$ on a Pi is just fun.
+
+
 
 ## 💬 Community & Support
 
