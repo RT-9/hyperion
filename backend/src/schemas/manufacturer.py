@@ -17,15 +17,17 @@
 from pydantic import BaseModel, UUID7
 from typing import Optional, List
 
+
 class CreateManufacturer(BaseModel):
     name: str
     website: Optional[str]
 
+
 class GetManufacturer(BaseModel):
     id: str
-    name:str
+    name: str
     website: Optional[str]
+
 
 class GetManufacturers(BaseModel):
     manufacturers: List[GetManufacturer]
-    

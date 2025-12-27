@@ -25,28 +25,27 @@ from sqlalchemy import (
     DateTime,
     Integer,
     Text,
+    UUID
 )
 from sqlalchemy.orm import relationship
 
 from ..core.database import Base, TimestampMixin
 
 
-class Show(Base, TimestampMixin):
+class Show(Base,TimestampMixin):
     """
-    Represents a lighting show file.
-
-    :param id: User-friendly integer identifier
-    :param name: Unique name of the show
-    :param created_by: Reference to the account that created the show
-    :param description: Optional details about the production
+    Container for a specific project or event. 
+    Allows multiple shows to exist in the same database.
     """
-
     __tablename__ = "shows"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(128), unique=True, nullable=False)
-    created_by = Column(ForeignKey("accounts.id"), nullable=False)
-    description = Column(String, nullable=True)
+
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                index=True, default=uuid.uuid7)
+    name = Column(String(100), nullable=False, unique=True)
+    created_by = Column(ForeignKey("accounts.id"))
 
     fixtures = relationship(
-        "Fixture", back_populates="show", cascade="all, delete-orphan"
-    )
+        "Fixture", back_populates="show", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Show(name='{self.name}')>"

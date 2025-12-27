@@ -33,14 +33,18 @@ class ManufacturerService:
             self.db.add(manufacturer)
             await self.db.commit()
             await self.db.refresh(manufacturer)
-            return manufacturer       
+            return manufacturer
         except IntegrityError:
             await self.db.rollback()
-    
+
     async def get_manufacturers(self):
         qry = select(Manufacturer).union_all()
         manufacturers = await self.db.execute(qry)
         manufacturers = manufacturers.all()
-        manufacturers = GetManufacturers(manufacturers=[GetManufacturer(id=str(x.id), name=x.name, website=x.website) for x in manufacturers])
+        manufacturers = GetManufacturers(
+            manufacturers=[
+                GetManufacturer(id=str(x.id), name=x.name, website=x.website)
+                for x in manufacturers
+            ]
+        )
         return manufacturers
-    

@@ -36,6 +36,7 @@ class AttributeType(str, enum.Enum):
     :param SPEED: General effect speed.
     :param UNKNOWN: Fallback for undefined attributes.
     """
+
     DIMMER = "dimmer"
     STROBE = "strobe"
     SHUTTER = "shutter"
@@ -66,10 +67,10 @@ class Manufacturer(Base):
     :param name: The commercial name of the manufacturer.
     :param website: Optional URL to the manufacturer's site.
     """
+
     __tablename__ = "manufacturers"
 
-    id = Column(UUID(as_uuid=True), primary_key=True,
-                index=True, default=uuid.uuid7)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid7)
     name = Column(String(100), nullable=False, unique=True)
     website = Column(String(200), nullable=True)
 
@@ -90,24 +91,26 @@ class FixtureType(Base):
     :param model: The model name of the fixture.
     :param mode_name: The specific DMX mode name.
     """
+
     __tablename__ = "fixture_types"
 
-    id = Column(UUID(as_uuid=True), primary_key=True,
-                index=True, default=uuid.uuid7)
-    manufacturer_id = Column(UUID(as_uuid=True), ForeignKey(
-        "manufacturers.id"), nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid7)
+    manufacturer_id = Column(
+        UUID(as_uuid=True), ForeignKey("manufacturers.id"), nullable=False
+    )
 
     model = Column(String(100), nullable=False)
     mode_name = Column(String(50), default="Standard")
 
     # Relationships
     manufacturer = relationship(
-        "Manufacturer", back_populates="fixture_types", lazy="joined")
+        "Manufacturer", back_populates="fixture_types", lazy="joined"
+    )
     channels = relationship(
         "FixtureChannel",
         back_populates="fixture_type",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
     instances = relationship("Fixture", back_populates="fixture_type")
 
@@ -128,11 +131,13 @@ class FixtureChannel(Base):
     :param highlight_value: Value used for the highlight function.
     :param invert_default: Whether the default logic is inverted.
     """
+
     __tablename__ = "fixture_channels"
 
     id = Column(Integer, primary_key=True, index=True)
-    fixture_type_id = Column(UUID(as_uuid=True), ForeignKey(
-        "fixture_types.id"), nullable=False)
+    fixture_type_id = Column(
+        UUID(as_uuid=True), ForeignKey("fixture_types.id"), nullable=False
+    )
 
     dmx_offset = Column(Integer, nullable=False)
     attribute = Column(Enum(AttributeType), nullable=False)
@@ -157,13 +162,17 @@ class Fixture(Base):
     :param invert_pan: Inverts the pan movement.
     :param invert_tilt: Inverts the tilt movement.
     """
+
     __tablename__ = "fixtures"
 
-    id = Column(UUID(as_uuid=True), primary_key=True,
-                index=True, default=uuid.uuid7)
-    name = Column(String(100), nullable=False, unique=True)
-    fixture_type_id = Column(UUID(as_uuid=True), ForeignKey(
-        "fixture_types.id"), nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid7)
+    show_id = Column(UUID(as_uuid=True), ForeignKey(
+        "shows.id"), nullable=False)
+    fid = Column(Integer, nullable=False, unique=False)
+    name = Column(String(100), nullable=False, unique=False)
+    fixture_type_id = Column(
+        UUID(as_uuid=True), ForeignKey("fixture_types.id"), nullable=False
+    )
 
     universe = Column(Integer, default=0, nullable=False)
     start_address = Column(Integer, nullable=False)
@@ -173,7 +182,10 @@ class Fixture(Base):
 
     # Relationships
     fixture_type = relationship(
-        "FixtureType", back_populates="instances", lazy="selectin")
+        "FixtureType", back_populates="instances", lazy="selectin"
+    )
 
+
+    show = relationship("Show", back_populates="fixtures")
     def __repr__(self):
         return f"<Fixture(name='{self.name}', address='{self.universe}.{self.start_address}')>"

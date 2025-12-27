@@ -14,3 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# backend/models/__init__.py
+
+from ..core.database import Base
+
+# Erst die unabhängigen Models importieren
+from .fixtures import Manufacturer
+from .shows import Show
+
+# Dann die abhängigen Models
+from .fixtures import FixtureType, FixtureChannel, Fixture
+
+# Damit sind alle Klassen einmal geladen und bei "Base" registriert.

@@ -14,19 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, Depends, status, HTTPException
-from ..core.database import get_db
-from ..core.security.access import require_programmer
+from ..models.shows import Show
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from ..schemas.show import CreateShow
-from ..services.shows import ShowService
-import logging
-show_router = APIRouter(tags=["show"])
-
-logger = logging.getLogger("AAAAAA")
-@show_router.post("/api/shows")
-async def post_create_show(create_show:CreateShow, db=Depends(get_db), current_user=Depends(require_programmer)):
-    logger.warning(current_user)
-    show_service = ShowService(db)
-    new_show = await show_service.create_showfile(create_show, current_user)
-    return new_show
-
+class ShowService:
+    def __init__(self, session: AsyncSession):
+        self.db = session
+        
+    async def create_showfile(self,create_show:CreateShow, user):
+        show = Show(name=create_show.name, created_by=user.id)
+        try:
+            self.db.add(show)
+            await self.db.commit()
+            await self.db.refresh(show)
+            return show
+        except IntegrityError:
+            await self.db.rollback()
