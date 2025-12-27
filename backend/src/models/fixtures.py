@@ -110,7 +110,6 @@ class FixtureType(Base):
     model = Column(String(100), nullable=False)
     mode_name = Column(String(50), default="Standard")
 
-    # Relationships
     manufacturer = relationship(
         "Manufacturer", back_populates="fixture_types", lazy="joined"
     )
@@ -159,7 +158,6 @@ class FixtureChannel(Base):
     highlight_value = Column(Integer, default=255)
     invert_default = Column(Boolean, default=False)
 
-    # Relationships
     fixture_type = relationship("FixtureType", back_populates="channels")
 
 
@@ -193,7 +191,6 @@ class Fixture(Base):
     invert_pan = Column(Boolean, default=False)
     invert_tilt = Column(Boolean, default=False)
 
-    # Relationships
     fixture_type = relationship(
         "FixtureType", back_populates="instances", lazy="selectin"
     )

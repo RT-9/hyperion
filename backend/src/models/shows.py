@@ -47,6 +47,8 @@ class Show(Base, TimestampMixin):
     fixtures = relationship(
         "Fixture", back_populates="show", cascade="all, delete-orphan"
     )
+    scenes = relationship("Scene", back_populates="show", cascade="all, delete")
+    cues = relationship("Cue", back_populates="show", cascade="all, delete")
 
     def __repr__(self):
         return f"<Show(name='{self.name}')>"

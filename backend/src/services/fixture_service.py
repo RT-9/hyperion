@@ -66,7 +66,7 @@ class FixtureService:
             raise
         except Exception as e:
             await self.db.rollback()
-            raise e  # Unbekannte Fehler auch hochwerfen
+            raise e
 
     async def patch_fixture(self, data: CreateFixturePatch):
         query = (
@@ -83,14 +83,11 @@ class FixtureService:
         channel_count = len(fixture_type.channels)
         end_address = data.start_address + channel_count - 1
 
-        # Check: Passt das überhaupt ins Universum?
         if end_address > 512:
             raise ValueError(
                 f"Fixture fits not in Universe. Ends at {end_address} (>512)."
             )
 
-        # 3. Kollisions-Check (Collision Detection)
-        # Wir holen alle Geräte in DERSELBEN Show und IMSELBEN Universum
         existing_fixtures_query = (
             select(Fixture)
             .where(
@@ -104,13 +101,10 @@ class FixtureService:
         existing_result = await self.db.execute(existing_fixtures_query)
         existing_fixtures = existing_result.scalars().all()
 
-        # Jetzt prüfen wir mathematisch auf Überlappung
         for existing in existing_fixtures:
-            # Größe des existierenden Geräts berechnen
             existing_len = len(existing.fixture_type.channels)
             existing_end = existing.start_address + existing_len - 1
 
-            # Überlappungs-Formel: (StartA <= EndB) and (StartB <= EndA)
             if (data.start_address <= existing_end) and (
                 existing.start_address <= end_address
             ):
@@ -118,9 +112,8 @@ class FixtureService:
                     f"DMX Collision! Overlaps with '{existing.name}' (Addr: {existing.start_address}-{existing_end})"
                 )
 
-        # 4. Wenn alles okay ist -> Speichern
         new_fixture = Fixture(
-            id=uuid.uuid7(),  # Falls du UUIDv7 manuell generierst, sonst weglassen
+            id=uuid.uuid7(),
             show_id=data.show_id,
             fixture_type_id=data.fixture_type_id,
             name=data.name,
@@ -138,5 +131,5 @@ class FixtureService:
             return new_fixture
         except IntegrityError as e:
             await self.db.rollback()
-            # Hier fängst du Unique Constraints ab (z.B. doppelte FID)
+
             raise ValueError("FID or Name already exists in this Show.")

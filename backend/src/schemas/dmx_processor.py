@@ -14,4 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pydantic import BaseModel
+
+from pydantic import BaseModel, Field, PositiveInt
+
+
+class DMXFrameRequest(BaseModel):
+    universe: int = Field(..., ge=0, le=65535, description="DMX Universe ID")
+    values: list[int] = Field(..., description="List of channel values (0-255)")

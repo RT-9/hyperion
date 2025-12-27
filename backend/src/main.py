@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from .core.redis_db import redis_manager
+from contextlib import asynccontextmanager
 from .routers.manufacturer import manufacturer_router
 from .routers.dmx import dmx_router
 from .routers.accounts import account_router
@@ -31,7 +33,17 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-app = FastAPI(title="Hyperion DMX", debug=settings.DEBUG)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    redis_manager.connect()
+    yield
+
+    await redis_manager.close()
+
+
+app = FastAPI(title="Hyperion DMX", debug=settings.DEBUG, lifespan=lifespan)
 
 
 app.include_router(account_router)

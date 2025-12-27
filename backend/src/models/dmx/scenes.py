@@ -14,24 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pathlib import Path
+from ...core.database import Base
+from sqlalchemy import UUID, Integer, ForeignKey, Column, String, JSON
+from sqlalchemy.orm import relationship
+import uuid
 
 
-class Settings(BaseSettings):
-    JWT_SECRET: str
-    HOST: str = "127.0.0.1"
-    PORT: int = 2468
-    DEBUG: bool = False
-    MARIADB_USER: str = "hyperion"
-    MARIADB_PASSWORD: str = "hyperion"
-    DB_HOST: str = "127.0.0.1"
-    DB_PORT: int = 3306
-    DATABASE: str = "hyperion"
-    model_config = SettingsConfigDict(extra="ignore", env_file=".env")
-    DROP_DB: bool = False
-    REDIS_URL: str = "redis://hyperion:hyperion@127.0.0.1:6379"
+class Scene(Base):
+    __tablename__ = "scenes"
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
 
-    @property
-    def db_url(self):
-        return f"mysql+asyncmy://{self.MARIADB_USER}:{self.MARIADB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DATABASE}"
+    sid = Column(Integer, index=True, nullable=False)
+    name = Column(String, nullable=True)
+
+    show_id = Column(UUID, ForeignKey("shows.id"))
+
+    dmx_data = Column(JSON, default=dict)
+
+    cues = relationship("Cue", back_populates="scene")

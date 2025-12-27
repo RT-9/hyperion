@@ -40,5 +40,4 @@ async def patch_fixture_endpoint(patch_data: CreateFixturePatch, db=Depends(get_
     try:
         return await service.patch_fixture(patch_data)
     except ValueError as e:
-        # Wir wandeln unsere Logik-Fehler in saubere HTTP 400 Errors um
         raise HTTPException(status_code=400, detail=str(e))

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, WebSocket, Depends, HTTPException
+from fastapi import APIRouter, WebSocket, Depends, HTTPException, WebSocketDisconnect
 from fastapi import status
 from ..core.database import get_db
 from ..core.security.access import require_admin
@@ -25,6 +25,13 @@ from ..schemas.device_management import AuthenticateOTP
 from ..core.exc import Conflict, Unauthorised
 from ..core.dependencies import get_current_device
 from ..services.dmx_processor import DMXProcessor
+
+# NEU: Redis Imports
+from ..core.redis_db import get_redis
+import redis.asyncio as redis
+import asyncio
+from ..services.dmx_protocol import DMXProtocol
+from ..schemas.dmx_processor import DMXFrameRequest
 
 dmx_router = APIRouter(tags=["hyperion-dmx"])
 
@@ -50,9 +57,55 @@ async def post_authenticate_otp(auth_otp: AuthenticateOTP, db=Depends(get_db)):
     return auth
 
 
+@dmx_router.post("/api/dmx/broadcast")
+async def trigger_dmx(value: str, redis_client: redis.Redis = Depends(get_redis)):
+    """
+    Publishes a value to Redis. All connected WebSockets will receive this.
+    """
+    await redis_client.publish("hyperion:dmx:global", value)
+    return {"status": "broadcast_sent", "value": value}
+
+
+@dmx_router.post("/api/dmx/send-frame")
+async def send_dmx_frame(
+    frame: DMXFrameRequest, redis_client: redis.Redis = Depends(get_redis)
+):
+    """
+    Takes a JSON DMX frame, packs it into binary, encodes to Base64,
+    and broadcasts it via Redis.
+    """
+    # Packen & für Redis vorbereiten (Base64 String)
+    transport_payload = DMXProtocol.to_transport(frame.universe, frame.values)
+
+    # Ab in den Verteiler
+    await redis_client.publish("hyperion:dmx:global", transport_payload)
+
+    return {"status": "sent", "bytes_size": len(frame.values) + 2}
+
+
 @dmx_router.websocket("/dmx")
-async def ws_show(websocket: WebSocket, device=Depends(get_current_device)):
+async def ws_show(
+    websocket: WebSocket,
+    device=Depends(get_current_device),
+    redis_client: redis.Redis = Depends(get_redis),
+):
+    """
+    WebSocket Endpoint for DMX Nodes using Redis Pub/Sub.
+    """
     await websocket.accept()
-    dmxp = DMXProcessor(websocket)
-    while True:
-        pass
+
+    dmxp = DMXProcessor(websocket, redis_client)
+
+    redis_task = asyncio.create_task(dmxp.subscribe_and_stream())
+
+    try:
+        while True:
+            j = await websocket.receive_json()
+            await dmxp.json_data(data=j)
+
+    except WebSocketDisconnect:
+        print(f"Node {device.name} disconnected")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        redis_task.cancel()

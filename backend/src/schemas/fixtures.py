@@ -28,7 +28,7 @@ class FixtureChannelCreate(BaseModel):
 
 
 class CreateFixtureType(BaseModel):
-    manufacturer_id: str  # oder UUID
+    manufacturer_id: str
     model: str
     mode_name: str
     channels: List[FixtureChannelCreate]  # <--- Diese Liste wird oben iteriert
