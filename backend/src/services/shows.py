@@ -15,12 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from ..models.shows import Show
+from ..models.fixtures import Fixture
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.exc import IntegrityError
-from ..schemas.show import CreateShow, GrantShowfileAccess
+from sqlalchemy import desc
+from ..schemas.show import CreateShow, GrantShowfileAccess, GetShowfiles, GetShowfile
 
-
+import uuid
 class ShowService:
     def __init__(self, session: AsyncSession):
         self.db = session
@@ -34,6 +36,44 @@ class ShowService:
             return show
         except IntegrityError:
             await self.db.rollback()
+            
 
-    async def grant_showfile_access(self, showfile_access: GrantShowfileAccess):
-        pass
+    async def get_showfiles(self, get_showfiles: GetShowfiles):
+        """
+        Fetch show files using either offset-based or keyset pagination.
+
+        :param get_showfiles: DTO containing page, limit, and optionally last_id.
+        :return: A sequence of Show objects.
+        """
+        effective_limit = min(get_showfiles.limit, 512)
+
+    
+        qry = select(Show).order_by(desc(Show.id)).limit(effective_limit +1)
+
+
+      
+         
+        calculated_offset = (get_showfiles.page - 1) * effective_limit
+        qry = qry.offset(calculated_offset)
+
+       
+        result = await self.db.execute(qry)
+        showfiles = result.scalars().all()
+
+        return showfiles
+
+    async def get_patching(self, showfile:GetShowfile):
+        qry = (
+            select(Fixture)
+           .join(Show, Fixture.show_id == Show.id)
+            .where(
+                Fixture.show_id == uuid.UUID(showfile.id),
+                Show.created_by == uuid.UUID(showfile.user)
+            )
+            .order_by(desc(Fixture.id))
+        )
+        result = await self.db.execute(qry)
+        return result.scalars().all()
+        
+        
+    

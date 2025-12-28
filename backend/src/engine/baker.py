@@ -14,24 +14,3 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pydantic import BaseModel, Field, UUID7
-
-
-class CreateShow(BaseModel):
-    name: str
-
-
-class GrantShowfileAccess(BaseModel):
-    show_id: str
-    granted_to: str
-    granted_by: str
-
-
-class GetShowfiles(BaseModel):
-    user: str
-    limit:int = Field(100, gt=0, le=512)
-    page:int = Field(1, gt=0)
-    
-class GetShowfile(BaseModel):
-    id: str
-    user:str
