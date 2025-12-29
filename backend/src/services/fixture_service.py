@@ -133,11 +133,9 @@ class FixtureService:
             await self.db.rollback()
 
             raise ValueError("FID or Name already exists in this Show.")
-        
+
     async def get_all_devices(self):
         qry = select(FixtureType).order_by(FixtureType.id)
         fixtures = await self.db.execute(qry)
         fixtures = fixtures.scalars().all()
         return fixtures
-    
-    

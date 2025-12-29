@@ -20,9 +20,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc
-from ..schemas.show import CreateShow, GrantShowfileAccess, GetShowfiles, GetShowfile
+from ..schemas.show import (
+    CreateShow,
+    GrantShowfileAccess,
+    GetShowfiles,
+    GetShowfile,
+    CreateScene,
+)
+from ..models.dmx.scenes import Scene, SceneFixtureValue
+
 
 import uuid
+
+
 class ShowService:
     def __init__(self, session: AsyncSession):
         self.db = session
@@ -36,7 +46,6 @@ class ShowService:
             return show
         except IntegrityError:
             await self.db.rollback()
-            
 
     async def get_showfiles(self, get_showfiles: GetShowfiles):
         """
@@ -47,33 +56,39 @@ class ShowService:
         """
         effective_limit = min(get_showfiles.limit, 512)
 
-    
-        qry = select(Show).order_by(desc(Show.id)).limit(effective_limit +1)
+        qry = select(Show).order_by(desc(Show.id)).limit(effective_limit + 1)
 
-
-      
-         
         calculated_offset = (get_showfiles.page - 1) * effective_limit
         qry = qry.offset(calculated_offset)
 
-       
         result = await self.db.execute(qry)
         showfiles = result.scalars().all()
 
         return showfiles
 
-    async def get_patching(self, showfile:GetShowfile):
+    async def get_patching(self, showfile: GetShowfile):
         qry = (
             select(Fixture)
-           .join(Show, Fixture.show_id == Show.id)
+            .join(Show, Fixture.show_id == Show.id)
             .where(
                 Fixture.show_id == uuid.UUID(showfile.id),
-                Show.created_by == uuid.UUID(showfile.user)
+                Show.created_by == uuid.UUID(showfile.user),
             )
             .order_by(desc(Fixture.id))
         )
         result = await self.db.execute(qry)
         return result.scalars().all()
-        
-        
-    
+
+    async def create_scene(self, scene_definition: CreateScene):
+        scene = Scene(
+            show_id=uuid.UUID(scene_definition.show_id, version=7),
+            sid=scene_definition.sid,
+            name=scene_definition.name,
+        )
+        try:
+            self.db.add(scene)
+            await self.db.commit()
+            await self.db.refresh(scene)
+        except IntegrityError:
+            await self.db.rollback()
+        return scene

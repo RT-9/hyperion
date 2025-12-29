@@ -42,6 +42,7 @@ async def patch_fixture_endpoint(patch_data: CreateFixturePatch, db=Depends(get_
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @fixture_router.get("/api/fixture-types")
 async def get_fixture_types(db=Depends(get_db), user=Depends(require_operator)):
     service = FixtureService(db)

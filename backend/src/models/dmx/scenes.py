@@ -15,21 +15,58 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from ...core.database import Base
-from sqlalchemy import UUID, Integer, ForeignKey, Column, String, JSON
+from ..fixtures import AttributeType
+from sqlalchemy import UUID, Integer, ForeignKey, Column, String, JSON, Enum
 from sqlalchemy.orm import relationship
 import uuid
 
 
 class Scene(Base):
     __tablename__ = "scenes"
-    id = Column(UUID, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid7)
 
     sid = Column(Integer, index=True, nullable=False)
-    name = Column(String, nullable=True)
-
-    show_id = Column(UUID, ForeignKey("shows.id"))
-
-    dmx_data = Column(JSON, default=dict)
-
-    cues = relationship("Cue", back_populates="scene")
+    name = Column(String(32), nullable=True)
+    show_id = Column(
+        UUID(as_uuid=True), ForeignKey("shows.id", ondelete="CASCADE"), nullable=False
+    )
     show = relationship("Show", back_populates="scenes")
+    cues = relationship("Cue", back_populates="scene", cascade="all, delete-orphan")
+    fixture_associations = relationship(
+        "SceneFixtureValue",
+        back_populates="scene",
+        cascade="all, delete-orphan",  # Wenn Szene gelöscht wird, lösche auch die Werte
+        lazy="selectin",  # WICHTIG: Lädt die Daten sofort effizient mit
+    )
+
+
+class SceneFixtureValue(Base):
+    """
+    Speichert EINEN Wert für EINEN Kanal eines Geräts in einer Szene.
+    Ersetzt das alte JSON-Blob Konzept durch sauberes SQL.
+    """
+
+    __tablename__ = "scene_fixture_values"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid7)
+
+    scene_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("scenes.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    fixture_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("fixtures.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+
+    attribute = Column(Enum(AttributeType), nullable=False)
+
+    value = Column(Integer, nullable=False)
+
+    scene = relationship("Scene", back_populates="fixture_associations")
+
+    fixture = relationship("Fixture", lazy="joined")

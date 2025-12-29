@@ -29,9 +29,16 @@ class GrantShowfileAccess(BaseModel):
 
 class GetShowfiles(BaseModel):
     user: str
-    limit:int = Field(100, gt=0, le=512)
-    page:int = Field(1, gt=0)
-    
+    limit: int = Field(100, gt=0, le=512)
+    page: int = Field(1, gt=0)
+
+
 class GetShowfile(BaseModel):
     id: str
-    user:str
+    user: str
+
+
+class CreateScene(BaseModel):
+    sid: int
+    name: str
+    show_id: str

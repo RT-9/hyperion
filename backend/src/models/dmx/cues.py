@@ -36,19 +36,17 @@ class EasingProfile(enum.Enum):
 class Cue(Base):
     __tablename__ = "cues"
 
-    id = Column(UUID, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid7)
     show_id = Column(UUID, ForeignKey("shows.id"))
 
     scene_id = Column(UUID, ForeignKey("scenes.id"))
 
-    number = Column(Float, index=True)
+    number = Column(Integer, index=True)
     label = Column(String(64))
-    fade_in = Column(Float, default=2.0)
-    trigger = Column(Enum(TriggerType), default=TriggerType.MANUAL)
-    trigger_value = Column(Float, default=0.0)
+    hold = Column(Float, default=2, comment="Time to wait until next cue is loaded.")
+
     easing = Column(Enum(EasingProfile), default=EasingProfile.LINEAR)
-    next_cue_id = Column(UUID, ForeignKey("cues.id"), nullable=True)
-    is_loop_end = Column(Boolean, default=False)
+
     scene = relationship("Scene", back_populates="cues")
     show = relationship("Show", back_populates="cues")
     effects = relationship("CueEffect", backref="cue", cascade="all, delete-orphan")
