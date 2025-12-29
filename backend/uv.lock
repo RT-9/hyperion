@@ -226,16 +226,6 @@ all = [
     { name = "ujson" },
     { name = "uvicorn", extra = ["standard"] },
 ]
-standard = [
-    { name = "email-validator" },
-    { name = "fastapi-cli", extra = ["standard"] },
-    { name = "httpx" },
-    { name = "jinja2" },
-    { name = "pydantic-extra-types" },
-    { name = "pydantic-settings" },
-    { name = "python-multipart" },
-    { name = "uvicorn", extra = ["standard"] },
-]
 
 [[package]]
 name = "fastapi-cli"
@@ -418,26 +408,17 @@ name = "hyperion"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "fastapi", extra = ["all"] },
-    { name = "pydantic-settings" },
-    { name = "pygount" },
-    { name = "redis" },
-]
-
-[package.optional-dependencies]
-runner = [
-    { name = "pyartnet" },
-    { name = "websockets" },
-]
-server = [
     { name = "argon2-cffi" },
     { name = "asyncmy" },
     { name = "faker" },
-    { name = "fastapi", extra = ["standard"] },
+    { name = "fastapi", extra = ["all"] },
     { name = "orjson" },
     { name = "pwdlib" },
     { name = "pyartnet" },
+    { name = "pydantic-settings" },
+    { name = "pygount" },
     { name = "pyjwt" },
+    { name = "redis" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
 ]
@@ -451,24 +432,20 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "argon2-cffi", marker = "extra == 'server'", specifier = ">=25.1.0" },
-    { name = "asyncmy", marker = "extra == 'server'", specifier = ">=0.2.10" },
-    { name = "faker", marker = "extra == 'server'", specifier = ">=39.0.0" },
+    { name = "argon2-cffi", specifier = ">=25.1.0" },
+    { name = "asyncmy", specifier = ">=0.2.10" },
+    { name = "faker", specifier = ">=39.0.0" },
     { name = "fastapi", extras = ["all"], specifier = ">=0.126.0" },
-    { name = "fastapi", extras = ["standard"], marker = "extra == 'server'", specifier = ">=0.126.0" },
-    { name = "orjson", marker = "extra == 'server'", specifier = ">=3.11.5" },
-    { name = "pwdlib", marker = "extra == 'server'", specifier = ">=0.3.0" },
-    { name = "pyartnet", marker = "extra == 'runner'", specifier = ">=2.0" },
-    { name = "pyartnet", marker = "extra == 'server'", specifier = ">=2.0" },
+    { name = "orjson", specifier = ">=3.11.5" },
+    { name = "pwdlib", specifier = ">=0.3.0" },
+    { name = "pyartnet", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "pygount", specifier = ">=3.1.0" },
-    { name = "pyjwt", marker = "extra == 'server'", specifier = ">=2.10.1" },
+    { name = "pyjwt", specifier = ">=2.10.1" },
     { name = "redis", specifier = ">=7.1.0" },
-    { name = "sqlalchemy", marker = "extra == 'server'", specifier = ">=2.0.45" },
-    { name = "uvicorn", marker = "extra == 'server'", specifier = ">=0.38.0" },
-    { name = "websockets", marker = "extra == 'runner'", specifier = ">=15.0.1" },
+    { name = "sqlalchemy", specifier = ">=2.0.45" },
+    { name = "uvicorn", specifier = ">=0.38.0" },
 ]
-provides-extras = ["server", "runner"]
 
 [package.metadata.requires-dev]
 dev = [

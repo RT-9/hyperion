@@ -19,15 +19,12 @@ from datetime import datetime
 from typing import AsyncGenerator
 
 from sqlalchemy import DateTime, func
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine
-)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.schema import MetaData
 
 from . import settings
+
 engine = create_async_engine(
     settings.db_url,
     echo=False,
