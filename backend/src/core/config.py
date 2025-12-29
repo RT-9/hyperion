@@ -33,4 +33,10 @@ class Settings(BaseSettings):
 
     @property
     def db_url(self):
+        """Returns mariadb database url.
+        
+        :returns: Correct database url with asyncmy driver.
+        :rtype: str
+        """
+        
         return f"mysql+asyncmy://{self.MARIADB_USER}:{self.MARIADB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DATABASE}"

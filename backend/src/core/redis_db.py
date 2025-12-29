@@ -21,7 +21,7 @@ import redis.asyncio as redis
 
 from . import settings
 
-logger = logging.getLogger("hyperion")
+logger = logging.getLogger("hyperion.redis")
 
 
 class RedisManager:
