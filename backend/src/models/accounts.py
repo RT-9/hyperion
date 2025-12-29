@@ -129,9 +129,10 @@ class ClientTokens(Base):
 
 class OTPModel(Base, TimestampMixin):
     """Represents a temporal One-Time Password (OTP) challenge for authenticating DMX devices.
-    
+
     The OTP is stored as a sha3_512 hash.
     """
+
     __tablename__ = "otp_challenges"
     id = Column(Integer, primary_key=True, autoincrement=True)
     otp = Column(String(128), unique=True, index=True)

@@ -84,7 +84,6 @@ class Base(DeclarativeBase):
 
     metadata = MetaData(naming_convention=naming_convention)
 
-    
     __table_args__ = {
         "mysql_engine": "InnoDB",
         "mysql_charset": "utf8mb4",
@@ -101,15 +100,13 @@ class TimestampMixin:
     """
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        sort_order=999
+        DateTime(timezone=True), server_default=func.now(), sort_order=999
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
-        sort_order=1000
+        sort_order=1000,
     )
 
 

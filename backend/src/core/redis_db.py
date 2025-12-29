@@ -38,7 +38,7 @@ class RedisManager:
 
         Loads the Redis URL from environment variables or defaults to localhost.
         """
-        self.redis_url = settings.REDIS_URL
+        self.redis_url = settings.redis_url
         self.pool: redis.ConnectionPool | None = None
 
     def connect(self):
