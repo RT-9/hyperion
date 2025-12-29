@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, WebSocket, Depends, HTTPException, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, Depends, HTTPException, WebSocketDisconnect, Query
 from fastapi import status
 from ..core.database import get_db
 from ..core.security.access import require_admin
@@ -34,7 +34,8 @@ from ..services.dmx_protocol import DMXProtocol
 from ..schemas.dmx_processor import DMXFrameRequest
 
 dmx_router = APIRouter(tags=["hyperion-dmx"])
-
+import logging
+logger = logging.getLogger("dmxenfine")
 
 @dmx_router.get("/api/dmx/otp-challenge")
 async def get_otp_challenge(user=Depends(require_admin), db=Depends(get_db)):
@@ -109,3 +110,19 @@ async def ws_show(
         print(f"Error: {e}")
     finally:
         redis_task.cancel()
+
+@dmx_router.websocket("/ws/engine")
+async def ws_engine(websocket:WebSocket ):
+    await websocket.accept()
+    logger.info("🚀 Frontend Engine connected to /ws/engine")
+   
+    try:
+        while True:
+            # Empfange das JSON direkt als Dictionary
+            data = await websocket.receive_json()
+            print(data)
+
+
+    except WebSocketDisconnect:
+        logger.info("🔌 Frontend Engine disconnected")
+    

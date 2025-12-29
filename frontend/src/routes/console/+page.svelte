@@ -1,39 +1,74 @@
 <script lang="ts">
-	import { Slider } from "bits-ui";
-	import { browser } from "$app/environment";
+    import { onMount, untrack } from 'svelte';
+    import { browser } from '$app/environment';
 
-	// Svelte 5: Array von Arrays, da Slider.Root immer ein Array für 'value' braucht
-	let dmxValues = $state(new Array(24).fill(0).map(() => [0]));
+    let dmxValues = $state(new Array(24).fill(0));
+    let socket: WebSocket | null = null;
+    
+    // Buffer for the last transmitted state to prevent redundant frames
+    let lastSentFrame = ''; 
+
+    function connect() {
+        if (!browser) return;
+        socket = new WebSocket('ws://127.0.0.1:2468/ws/engine');
+        socket.onopen = () => console.log('✅ Engine Link Online');
+    }
+
+    onMount(() => {
+        connect();
+        return () => socket?.close();
+    });
+
+    /**
+     * Strict change detection logic.
+     * This effect only executes when dmxValues is mutated.
+     * We then verify if the content has actually changed before sending.
+     */
+    $effect(() => {
+        // 1. Create a non-reactive snapshot of the current state
+        const currentSnapshot = $state.snapshot(dmxValues);
+        const currentSerialized = JSON.stringify(currentSnapshot);
+
+        // 2. Only proceed if the data differs from the last sent packet
+        if (currentSerialized !== lastSentFrame) {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    universe: 0,
+                    channels: currentSnapshot
+                }));
+                
+                // 3. Update the buffer
+                lastSentFrame = currentSerialized;
+                console.log("📡 Change detected: Frame transmitted");
+            }
+        }
+    });
 </script>
 
 <style>
-	@reference "../layout.css";
+    @reference "../layout.css";
+    /* Native vertical styling for maximum performance */
+    input[type="range"] {
+        writing-mode: bt-lr; 
+        appearance: slider-vertical;
+        width: 40px;
+        height: 300px;
+        cursor: pointer;
+    }
 </style>
 
-<div class="p-8 h-full w-full">
-	<div class="flex gap-4 h-[400px] overflow-x-auto p-4 bg-slate-900/30 rounded-3xl border border-white/5">
-		{#if browser}
-			{#each dmxValues as _, i}
-				<div class="flex flex-col items-center gap-3 w-16 h-full border border-white/5 py-4 rounded-xl bg-black/20">
-					<span class="text-[9px] font-mono text-slate-500">{i + 1}</span>
-
-					<Slider.Root
-						bind:value={dmxValues[i]}
-						max={255}
-						orientation="vertical"
-						class="relative flex flex-col items-center flex-1 w-full touch-none select-none px-4 cursor-pointer"
-					>
-						<Slider.Track class="relative w-3 grow rounded-full bg-slate-800">
-							<Slider.Range class="absolute w-full bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
-						</Slider.Track>
-						<Slider.Thumb
-							class="block w-8 h-4 bg-white border-2 border-cyan-500 rounded-sm hover:scale-125 transition-transform outline-none z-50 shadow-2xl"
-						/>
-					</Slider.Root>
-
-					<span class="text-[10px] font-mono text-cyan-500">{dmxValues[i][0]}</span>
-				</div>
-			{/each}
-		{/if}
-	</div>
+<div class="p-10 bg-slate-950 min-h-screen text-white">
+    <div class="flex gap-4 overflow-x-auto p-6 bg-black/30 rounded-3xl border border-white/5">
+        {#each dmxValues as _, i}
+            <div class="flex flex-col items-center gap-4">
+                <span class="text-[10px] font-mono text-slate-500">CH {i + 1}</span>
+                <input 
+                    type="range" 
+                    min="0" max="255" 
+                    bind:value={dmxValues[i]} 
+                />
+                <span class="text-cyan-500 font-mono font-bold">{dmxValues[i]}</span>
+            </div>
+        {/each}
+    </div>
 </div>
