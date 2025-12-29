@@ -17,7 +17,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from ..core.database import get_db
-from ..core.security.access import require_operator, require_tech_lead
+from ..core.security.access import require_operator, require_tech_lead, require_programmer
+from ..core.exc import DuplicateEntryError
 from ..schemas.fixtures import CreateFixturePatch, CreateFixtureType
 from ..services.fixture_service import FixtureService
 
@@ -30,13 +31,18 @@ async def post_add_fixture(
     db=Depends(get_db),
     current_user=Depends(require_tech_lead),
 ):
-    fixture_service = FixtureService(db)
-    fixture = await fixture_service.create_fixture_type(new_fixture)
+    try:
+        fixture_service = FixtureService(db)
+        fixture = await fixture_service.create_fixture_type(new_fixture)
+    except DuplicateEntryError as e:
+        raise HTTPException(409, detail=str(e))
+    except Exception:
+        raise HTTPException(500)
     return fixture
 
 
 @fixture_router.post("/api/fixture")
-async def patch_fixture_endpoint(patch_data: CreateFixturePatch, db=Depends(get_db)):
+async def post_fixture_patch_endpoint(patch_data: CreateFixturePatch, db=Depends(get_db), current_user = Depends(require_programmer)):
     service = FixtureService(db)
     try:
         return await service.patch_fixture(patch_data)

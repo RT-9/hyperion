@@ -30,6 +30,7 @@ from ..schemas.show import (
     GetShowfile,
     GetShowfiles,
 )
+from ..core.exc import DuplicateEntryError
 
 
 class ShowService:
@@ -105,6 +106,7 @@ class ShowService:
             await self.db.refresh(fix_def)
         except IntegrityError:
             await self.db.rollback()
+            raise DuplicateEntryError("Duplicate fixture definition found.")
         return fix_def
 
     async def create_cue(self):

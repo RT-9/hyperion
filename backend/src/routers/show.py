@@ -16,10 +16,11 @@
 
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from ..core.database import get_db
 from ..core.security.access import require_operator, require_programmer
+from ..core.exc import DuplicateEntryError
 from ..schemas.show import (
     CreateFixturesInScene,
     CreateFixturesInSceneRequest,
@@ -91,13 +92,18 @@ async def put_create_fixture_definition(
     db=Depends(get_db),
     current_user=Depends(require_programmer),
 ):
-    fixture_def = CreateFixturesInScene(
-        scene_id=scene_id,
-        fixture_id=fixture_definition.fixture_id,
-        attribute=fixture_definition.attribute,
-        value=fixture_definition.value,
-    )
+    try:
+        fixture_def = CreateFixturesInScene(
+            scene_id=scene_id,
+            fixture_id=fixture_definition.fixture_id,
+            attribute=fixture_definition.attribute,
+            value=fixture_definition.value,
+        )
 
-    service = ShowService(db)
-    fix_def = await service.add_fixtures_to_scene(fixture_def)
+        service = ShowService(db)
+        fix_def = await service.add_fixtures_to_scene(fixture_def)
+    except DuplicateEntryError as e:
+        raise HTTPException(409, detail=str(e))
+    except Exception:
+        raise HTTPException(500)
     return fix_def

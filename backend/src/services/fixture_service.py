@@ -23,7 +23,7 @@ from sqlalchemy.orm import selectinload
 
 from ..models.fixtures import Fixture, FixtureChannel, FixtureType
 from ..schemas.fixtures import CreateFixturePatch, CreateFixtureType
-
+from ..core.exc import DuplicateEntryError
 
 class FixtureService:
     def __init__(self, session: AsyncSession):
@@ -60,10 +60,7 @@ class FixtureService:
 
         except IntegrityError:
             await self.db.rollback()
-            raise
-        except Exception as e:
-            await self.db.rollback()
-            raise e
+            raise DuplicateEntryError(f"Fixture type already exists")
 
     async def patch_fixture(self, data: CreateFixturePatch):
         query = (

@@ -18,10 +18,11 @@ import logging
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 from ..models.accounts import Accounts, Role
 
-logger = logging.getLogger("startup.service")
+logger = logging.getLogger("hyperion.startup.service")
 
 
 class StartupService:
@@ -29,16 +30,22 @@ class StartupService:
         self.db = session
 
     async def admin_created(self):
-        qry = (
-            select(func.count())
-            .where(Accounts.role_id == Role.id)
-            .where(Role.name == "admin")
-        )
-        result = await self.db.execute(qry)
+        try:
+            qry = (
+                select(func.count())
+                .where(Accounts.role_id == Role.id)
+                .where(Role.name == "admin")
+            )
+            result = await self.db.execute(qry)
+        except IntegrityError as e:
+            await self.db.rollback()
+            logger.error(str(e))
+            raise
         return result.scalar()
 
     async def check_initial_procedure(self):
         if user_count := await self.admin_created():
             logger.info(f"{user_count} admin accounts already exist")
             return False
+            
         return True

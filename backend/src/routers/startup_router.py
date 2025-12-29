@@ -44,6 +44,10 @@ async def post_create_admin_user(user: UserCreate, db=Depends(get_db)):
 
 @startup_router.get("/api/startup/initial-procedure")
 async def get_initial_procedure(db=Depends(get_db)):
-    service = StartupService(db)
-    result = await service.check_initial_procedure()
+    try:
+        service = StartupService(db)
+        result = await service.check_initial_procedure()
+        
+    except Exception:
+        raise HTTPException(500) 
     return result

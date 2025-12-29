@@ -14,9 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from ..core.database import get_db
+from ..core.exc import DuplicateEntryError
 from ..core.security.access import require_programmer, require_tech_lead
 from ..schemas.manufacturer import CreateManufacturer, GetManufacturer
 from ..services.manufacturers import ManufacturerService
@@ -30,9 +31,13 @@ async def post_add_manufacturer(
     db=Depends(get_db),
     current_user=Depends(require_tech_lead),
 ):
-    man_service = ManufacturerService(db)
-    created_manufacturer = await man_service.add_manufacturer(manufacturer)
-
+    try:
+        man_service = ManufacturerService(db)
+        created_manufacturer = await man_service.add_manufacturer(manufacturer)
+    except DuplicateEntryError as e: 
+        raise HTTPException(409, detail=str(e))
+    except Exception:
+        raise HTTPException(500)
     return GetManufacturer(
         id=created_manufacturer.id,
         name=created_manufacturer.name,

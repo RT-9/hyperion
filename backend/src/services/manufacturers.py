@@ -17,6 +17,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+
+from ..core.exc import DuplicateEntryError
 from ..schemas.manufacturer import CreateManufacturer, GetManufacturers, GetManufacturer
 from ..models.fixtures import Manufacturer
 
@@ -36,6 +38,7 @@ class ManufacturerService:
             return manufacturer
         except IntegrityError:
             await self.db.rollback()
+            raise DuplicateEntryError(f"Manufacturer '{create_manufacturer.name}' already exists.")
 
     async def get_manufacturers(self):
         qry = select(Manufacturer).union_all()
