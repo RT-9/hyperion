@@ -1,8 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from ..models.accounts import Accounts, Role
-from sqlalchemy import select, exists, func
+import logging
 
-import logging 
+from sqlalchemy import exists, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models.accounts import Accounts, Role
 
 logger = logging.getLogger("startup.service")
 

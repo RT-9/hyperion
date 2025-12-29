@@ -14,24 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from ..models.shows import Show
-from ..models.fixtures import Fixture
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import desc
-from ..schemas.show import (
-    CreateShow,
-    GrantShowfileAccess,
-    GetShowfiles,
-    GetShowfile,
-    CreateScene,
-    CreateFixturesInScene
-)
-from ..models.dmx.scenes import Scene, SceneFixtureValue
-
-
 import uuid
+
+from sqlalchemy import desc, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models.dmx.scenes import Scene, SceneFixtureValue
+from ..models.fixtures import Fixture
+from ..models.shows import Show
+from ..schemas.show import (
+    CreateFixturesInScene,
+    CreateScene,
+    CreateShow,
+    GetShowfile,
+    GetShowfiles,
+    GrantShowfileAccess
+)
 
 
 class ShowService:

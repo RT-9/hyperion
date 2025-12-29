@@ -14,12 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from ...core.database import Base
-from sqlalchemy import Column, UUID, Integer, String, Float, ForeignKey, Enum, Boolean
-from sqlalchemy.orm import relationship
-import uuid
 import enum
+import uuid
 
+from sqlalchemy import (
+    UUID,
+    Boolean,
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String
+)
+from sqlalchemy.orm import relationship
+
+from ...core.database import Base
 
 class TriggerType(enum.Enum):
     MANUAL = "manual"

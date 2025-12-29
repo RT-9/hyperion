@@ -14,20 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .core.redis_db import redis_manager
+import logging
+
+import uvicorn
 from contextlib import asynccontextmanager
-from .routers.manufacturer import manufacturer_router
-from .routers.dmx import dmx_router
-from .routers.accounts import account_router
-from .routers.show import show_router
-from .routers.fixtures import fixture_router
-from .routers.startup_router import startup_router
-from .core.startup import startup
-from .core import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-import logging
+
+from .core import settings
+from .core.redis_db import redis_manager
+from .core.startup import startup
+from .routers.accounts import account_router
+from .routers.dmx import dmx_router
+from .routers.fixtures import fixture_router
+from .routers.manufacturer import manufacturer_router
+from .routers.show import show_router
+from .routers.startup_router import startup_router
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

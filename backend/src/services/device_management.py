@@ -14,18 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import select, delete
 import hashlib
+import logging
 import secrets
 import string
-import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
-from ..models.accounts import OTPModel, HyperionClients, ClientTokens
-from ..schemas.device_management import GetOTP, AuthenticateOTP, AuthenticatedDevice
-from ..core.exc import Unauthorised, Conflict
+from sqlalchemy import delete, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..core.exc import Conflict, Unauthorised
+from ..models.accounts import ClientTokens, HyperionClients, OTPModel
+from ..schemas.device_management import (
+    AuthenticatedDevice,
+    AuthenticateOTP,
+    GetOTP
+)
 
 logger = logging.getLogger("device_service")
 

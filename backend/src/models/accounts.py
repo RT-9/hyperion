@@ -15,22 +15,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import uuid
-from sqlalchemy import (
-    Column,
-    String,
-    ForeignKey,
-    Table,
-    Boolean,
-    DateTime,
-    Integer,
-    Index,
-)
-from sqlalchemy import UUID
 from datetime import datetime
 
+from sqlalchemy import (
+    UUID,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Table
+)
 from sqlalchemy.orm import relationship
-from ..core.database import Base, TimestampMixin
 
+from ..core.database import Base, TimestampMixin
 
 class Role(Base):
     """

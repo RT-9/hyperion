@@ -14,18 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import uuid
+
+from sqlalchemy import and_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import IntegrityError
-from ..models.fixtures import Manufacturer, FixtureType, FixtureChannel, Fixture
-from ..schemas.fixtures import CreateFixtureType, CreateFixturePatch
-import uuid
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
-from ..models.fixtures import FixtureType, FixtureChannel
-from ..schemas.fixtures import CreateFixtureType
-import uuid
+
+from ..models.fixtures import (
+    Fixture,
+    FixtureChannel,
+    FixtureType,
+    Manufacturer
+)
+from ..schemas.fixtures import CreateFixturePatch, CreateFixtureType
 
 
 class FixtureService:

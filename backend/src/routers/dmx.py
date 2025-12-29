@@ -14,24 +14,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, WebSocket, Depends, HTTPException, WebSocketDisconnect, Query
-from fastapi import status
-from ..core.database import get_db
-from ..core.security.access import require_admin
+import asyncio
 import secrets
 import string
-from ..services.device_management import DeviceService
-from ..schemas.device_management import AuthenticateOTP
-from ..core.exc import Conflict, Unauthorised
-from ..core.dependencies import get_current_device
-from ..services.dmx_processor import DMXProcessor
 
-# NEU: Redis Imports
-from ..core.redis_db import get_redis
 import redis.asyncio as redis
-import asyncio
-from ..services.dmx_protocol import DMXProtocol
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+    status
+)
+
+from ..core.database import get_db
+from ..core.dependencies import get_current_device
+from ..core.exc import Conflict, Unauthorised
+from ..core.redis_db import get_redis
+from ..core.security.access import require_admin
+from ..schemas.device_management import AuthenticateOTP
 from ..schemas.dmx_processor import DMXFrameRequest
+from ..services.device_management import DeviceService
+from ..services.dmx_processor import DMXProcessor
+from ..services.dmx_protocol import DMXProtocol
 
 dmx_router = APIRouter(tags=["hyperion-dmx"])
 import logging
@@ -75,10 +82,9 @@ async def send_dmx_frame(
     Takes a JSON DMX frame, packs it into binary, encodes to Base64,
     and broadcasts it via Redis.
     """
-    # Packen & für Redis vorbereiten (Base64 String)
     transport_payload = DMXProtocol.to_transport(frame.universe, frame.values)
 
-    # Ab in den Verteiler
+
     await redis_client.publish("hyperion:dmx:global", transport_payload)
 
     return {"status": "sent", "bytes_size": len(frame.values) + 2}
@@ -111,18 +117,49 @@ async def ws_show(
     finally:
         redis_task.cancel()
 
+
 @dmx_router.websocket("/ws/engine")
-async def ws_engine(websocket:WebSocket ):
+async def ws_engine(
+    websocket: WebSocket,
+    redis_client: redis.Redis = Depends(get_redis)
+):
+    """
+    Handle real-time DMX engine updates via WebSocket and broadcast via Redis.
+
+    This endpoint receives JSON frames from the frontend, transforms them 
+    into a packed binary format using the DMXProtocol, and publishes 
+    the result to the global Redis channel for all connected nodes.
+
+    :param websocket: The active WebSocket connection from the frontend.
+    :param redis_client: Redis instance used for Pub/Sub broadcasting.
+    """
     await websocket.accept()
     logger.info("🚀 Frontend Engine connected to /ws/engine")
-   
+
     try:
         while True:
-            # Empfange das JSON direkt als Dictionary
-            data = await websocket.receive_json()
+            # Receive JSON data directly from the Svelte frontend
+            data = await websocket.receive_json(mode="text")
+            data = dict(data)
             print(data)
+            # Extract universe and channel values
+            # Svelte sends: {"universe": 0, "channels": [...]}
+            universe = data.get("universe", 0)
+            channels = data.get("channels", [])
 
+            if channels:
+                # Pack the data into binary format and encode to Base64
+                # This mimics the logic in the /api/dmx/send-frame endpoint
+                transport_payload = DMXProtocol.to_transport(
+                    universe, channels)
+
+                # Broadcast the packed payload to the Redis distributor
+                await redis_client.publish("hyperion:dmx:global", transport_payload)
+
+                # Optional: Log the broadcast for debugging
+                logger.debug(f"Broadcasted universe {universe} with {len(channels)} channels")
 
     except WebSocketDisconnect:
         logger.info("🔌 Frontend Engine disconnected")
-    
+    except Exception as e:
+        logger.error(f"🔥 Critical error in ws_engine: {e}")

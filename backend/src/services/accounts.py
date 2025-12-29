@@ -14,20 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import asyncio
 import re
+import uuid
 from datetime import datetime, timedelta, timezone
-from jwt import encode, decode
+
+from jwt import decode, encode
 from pwdlib import PasswordHash
-from sqlalchemy import select, update, delete, func
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core import settings
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
-from ..models.accounts import Accounts, UsedRefreshToken, Role
+from ..models.accounts import Accounts, Role, UsedRefreshToken
 from ..schemas.accounts import UserCreate, UserGet, UserLogin
-import uuid
-import asyncio
 
 # Password policy: 8-64 chars, at least one uppercase, one lowercase, one digit, and one special char.
 PATTERN = re.compile(

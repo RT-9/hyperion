@@ -14,20 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import Request
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import (
-    OAuth2PasswordBearer,
-    OAuth2PasswordRequestForm,
     APIKeyCookie,
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm
 )
 
-from ..core.database import get_db
 from ..core import settings
-from ..services.accounts import AccountService
-from ..schemas.accounts import UserCreate, UserResponse, UserLogin, UserGet
+from ..core.database import get_db
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
+from ..schemas.accounts import UserCreate, UserGet, UserLogin, UserResponse
+from ..services.accounts import AccountService
 
 account_router = APIRouter(prefix="/api", tags=["accounts"])
 

@@ -8,17 +8,19 @@
 
 import enum
 import uuid
+
 from sqlalchemy import (
+    Boolean,
     Column,
+    Enum,
+    ForeignKey,
     Integer,
     String,
-    ForeignKey,
-    Boolean,
-    Enum,
-    UniqueConstraint,
+    UniqueConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from ..core.database import Base
 
 

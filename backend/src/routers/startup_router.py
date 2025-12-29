@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+
 from ..core.database import get_db
+from ..core.exc import InvalidPasswordError
+from ..schemas.accounts import UserCreate
 from ..services.accounts import AccountService
 from ..services.startup_procedure import StartupService
-from ..schemas.accounts import UserCreate
-from ..core.exc import InvalidPasswordError
+
 startup_router = APIRouter(tags=["startup"])
 
 @startup_router.post("/api/startup/create-admin-user")

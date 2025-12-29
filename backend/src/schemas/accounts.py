@@ -15,12 +15,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
-from uuid import UUID
-from typing import Optional, Self
-
-from pydantic import BaseModel, Field, field_validator, model_validator
-from faker import Faker
 from datetime import datetime
+from typing import Optional, Self
+from uuid import UUID
+
+from faker import Faker
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 fake = Faker(locale=["en_GB"])

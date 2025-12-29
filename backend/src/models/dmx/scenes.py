@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from ...core.database import Base
-from ..fixtures import AttributeType
-from sqlalchemy import UUID, Integer, ForeignKey, Column, String, JSON, Enum
-from sqlalchemy.orm import relationship
 import uuid
 
+from sqlalchemy import JSON, UUID, Column, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
+from ...core.database import Base
+from ..fixtures import AttributeType
 
 class Scene(Base):
     __tablename__ = "scenes"

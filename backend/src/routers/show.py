@@ -14,13 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, Depends, status, HTTPException
-from ..core.database import get_db
-from ..core.security.access import require_programmer, require_operator
-from ..schemas.show import CreateShow, GetShowfiles, GetShowfile, CreateScene, CreateFixturesInSceneRequest, CreateFixturesInScene
-from ..services.shows import ShowService
 import logging
 import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from ..core.database import get_db
+from ..core.security.access import require_operator, require_programmer
+from ..schemas.show import (
+    CreateFixturesInScene,
+    CreateFixturesInSceneRequest,
+    CreateScene,
+    CreateShow,
+    GetShowfile,
+    GetShowfiles
+)
+from ..services.shows import ShowService
 
 show_router = APIRouter(tags=["show"])
 

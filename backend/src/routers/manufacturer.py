@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from fastapi import APIRouter, Depends
+
 from ..core.database import get_db
 from ..core.security.access import require_programmer, require_tech_lead
 from ..schemas.manufacturer import CreateManufacturer, GetManufacturer
