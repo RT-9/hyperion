@@ -1,9 +1,11 @@
 <script lang="ts">
-	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+    // DAS IST DIE ENTSCHEIDENDE ZEILE.
+    // Sie sagt Svelte, wo deine Tailwind-Styles liegen.
+    // Wir gehen davon aus, dass layout.css im 'src' Ordner liegt (eins höher als routes).
+    import "./layout.css";
 
-	let { children } = $props();
+    // Svelte 5 Syntax um den Inhalt der Seite anzuzeigen
+    let { children } = $props();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
 {@render children()}

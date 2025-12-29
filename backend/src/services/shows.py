@@ -109,4 +109,4 @@ class ShowService:
         return fix_def
     
     async def create_cue(self):
-        
+        raise NotImplemented

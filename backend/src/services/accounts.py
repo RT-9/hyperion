@@ -18,7 +18,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from jwt import encode, decode
 from pwdlib import PasswordHash
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -257,6 +257,11 @@ class AccountService:
         qry = delete(UsedRefreshToken).where(UsedRefreshToken.expires_at < now)
         await self.db.execute(qry)
         await self.db.commit()
+        
+    async def amount_users(self):
+        qry = select(func.count()).select_from(Accounts)
+        count = await self.db.execute(qry)
+        return count.scalar() or 0
 
     @staticmethod
     def encode_jwt(sub):

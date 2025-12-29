@@ -24,6 +24,7 @@ from fastapi.security import (
 )
 
 from ..core.database import get_db
+from ..core import settings
 from ..services.accounts import AccountService
 from ..schemas.accounts import UserCreate, UserResponse, UserLogin, UserGet
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
@@ -90,7 +91,7 @@ async def post_login(
             value=refresh_token[0],
             httponly=True,
             expires=refresh_token[1],
-            secure=True,
+            secure=not settings.DEBUG,
             samesite="lax",
         )
         response.set_cookie(
@@ -98,11 +99,12 @@ async def post_login(
             value=access_token[0],
             httponly=True,
             expires=access_token[1],
-            secure=True,
+            secure=not settings.DEBUG,
             samesite="lax",
         )
         return response
     except Unauthorised as e:
+        print(e)
         raise HTTPException(
             status_code=401,
             detail=str(e),
