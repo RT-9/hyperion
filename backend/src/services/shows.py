@@ -26,6 +26,7 @@ from ..schemas.show import (
     GetShowfiles,
     GetShowfile,
     CreateScene,
+    CreateFixturesInScene
 )
 from ..models.dmx.scenes import Scene, SceneFixtureValue
 
@@ -92,3 +93,20 @@ class ShowService:
         except IntegrityError:
             await self.db.rollback()
         return scene
+    async def add_fixtures_to_scene(self, fixture_definition:CreateFixturesInScene):
+        fix_def = SceneFixtureValue(
+            scene_id=uuid.UUID(fixture_definition.scene_id),
+            fixture_id=uuid.UUID(fixture_definition.fixture_id),
+            attribute=fixture_definition.attribute,
+            value=fixture_definition.value
+        )
+        try:
+            self.db.add(fix_def)
+            await self.db.commit()
+            await self.db.refresh(fix_def)
+        except IntegrityError:
+            await self.db.rollback()
+        return fix_def
+    
+    async def create_cue(self):
+        

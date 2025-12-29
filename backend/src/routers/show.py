@@ -17,7 +17,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from ..core.database import get_db
 from ..core.security.access import require_programmer, require_operator
-from ..schemas.show import CreateShow, GetShowfiles, GetShowfile, CreateScene
+from ..schemas.show import CreateShow, GetShowfiles, GetShowfile, CreateScene, CreateFixturesInSceneRequest, CreateFixturesInScene
 from ..services.shows import ShowService
 import logging
 import uuid
@@ -74,3 +74,13 @@ async def post_create_scene(
     service = ShowService(db)
     scene = await service.create_scene(scene_definition)
     return scene
+
+@show_router.put("/api/shows/scenes/{scene_id}/fixture-definition")
+async def put_create_fixture_definition(scene_id:str, fixture_definition:CreateFixturesInSceneRequest, db = Depends(get_db), current_user = Depends(require_programmer)):
+    fixture_def = CreateFixturesInScene(
+        scene_id=scene_id, fixture_id=fixture_definition.fixture_id, attribute=fixture_definition.attribute, value=fixture_definition.value)
+    
+    service = ShowService(db)
+    fix_def = await service.add_fixtures_to_scene(fixture_def)
+    return fix_def
+    
