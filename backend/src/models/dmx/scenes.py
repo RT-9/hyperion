@@ -16,11 +16,12 @@
 
 import uuid
 
-from sqlalchemy import JSON, UUID, Column, Enum, ForeignKey, Integer, String
+from sqlalchemy import UUID, Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from ...core.database import Base
 from ..fixtures import AttributeType
+
 
 class Scene(Base):
     __tablename__ = "scenes"

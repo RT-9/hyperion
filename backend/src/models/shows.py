@@ -15,16 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import uuid
-from datetime import datetime
 from sqlalchemy import (
     Column,
     String,
     ForeignKey,
-    Table,
-    Boolean,
-    DateTime,
-    Integer,
-    Text,
     UUID,
 )
 from sqlalchemy.orm import relationship

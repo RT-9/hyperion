@@ -17,16 +17,7 @@
 import enum
 import uuid
 
-from sqlalchemy import (
-    JSON,
-    UUID,
-    Column,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    String
-)
+from sqlalchemy import JSON, UUID, Column, Enum, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from ...core.database import Base

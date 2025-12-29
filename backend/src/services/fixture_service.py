@@ -21,12 +21,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ..models.fixtures import (
-    Fixture,
-    FixtureChannel,
-    FixtureType,
-    Manufacturer
-)
+from ..models.fixtures import Fixture, FixtureChannel, FixtureType
 from ..schemas.fixtures import CreateFixturePatch, CreateFixtureType
 
 
@@ -131,7 +126,7 @@ class FixtureService:
             await self.db.commit()
             await self.db.refresh(new_fixture)
             return new_fixture
-        except IntegrityError as e:
+        except IntegrityError:
             await self.db.rollback()
 
             raise ValueError("FID or Name already exists in this Show.")

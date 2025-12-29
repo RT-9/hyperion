@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from ...models.accounts import Role, Accounts
+from ...models.accounts import Accounts
 from ...services.accounts import AccountService
 from typing import List
 from enum import Enum

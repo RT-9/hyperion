@@ -17,19 +17,11 @@
 import enum
 import uuid
 
-from sqlalchemy import (
-    UUID,
-    Boolean,
-    Column,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    String
-)
+from sqlalchemy import UUID, Column, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from ...core.database import Base
+
 
 class TriggerType(enum.Enum):
     MANUAL = "manual"

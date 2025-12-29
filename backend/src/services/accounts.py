@@ -258,7 +258,7 @@ class AccountService:
         qry = delete(UsedRefreshToken).where(UsedRefreshToken.expires_at < now)
         await self.db.execute(qry)
         await self.db.commit()
-        
+
     async def amount_users(self):
         qry = select(func.count()).select_from(Accounts)
         count = await self.db.execute(qry)

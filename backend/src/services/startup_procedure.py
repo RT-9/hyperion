@@ -1,17 +1,17 @@
 import logging
 
-from sqlalchemy import exists, func, select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.accounts import Accounts, Role
 
 logger = logging.getLogger("startup.service")
 
+
 class StartupService:
-    
     def __init__(self, session: AsyncSession):
-        self.db = session 
-        
+        self.db = session
+
     async def admin_created(self):
         qry = (
             select(func.count())
@@ -20,11 +20,9 @@ class StartupService:
         )
         result = await self.db.execute(qry)
         return result.scalar()
-    
-    
-    
+
     async def check_initial_procedure(self):
         if user_count := await self.admin_created():
             logger.info(f"{user_count} admin accounts already exist")
-            return False 
+            return False
         return True

@@ -29,7 +29,6 @@ from ..schemas.show import (
     CreateShow,
     GetShowfile,
     GetShowfiles,
-    GrantShowfileAccess
 )
 
 
@@ -92,12 +91,13 @@ class ShowService:
         except IntegrityError:
             await self.db.rollback()
         return scene
-    async def add_fixtures_to_scene(self, fixture_definition:CreateFixturesInScene):
+
+    async def add_fixtures_to_scene(self, fixture_definition: CreateFixturesInScene):
         fix_def = SceneFixtureValue(
             scene_id=uuid.UUID(fixture_definition.scene_id),
             fixture_id=uuid.UUID(fixture_definition.fixture_id),
             attribute=fixture_definition.attribute,
-            value=fixture_definition.value
+            value=fixture_definition.value,
         )
         try:
             self.db.add(fix_def)
@@ -106,6 +106,6 @@ class ShowService:
         except IntegrityError:
             await self.db.rollback()
         return fix_def
-    
+
     async def create_cue(self):
-        raise NotImplemented
+        raise NotImplementedError

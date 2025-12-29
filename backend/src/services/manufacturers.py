@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from ..schemas.manufacturer import CreateManufacturer, GetManufacturers, GetManufacturer
 from ..models.fixtures import Manufacturer

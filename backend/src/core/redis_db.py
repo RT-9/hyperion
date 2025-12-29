@@ -49,7 +49,7 @@ class RedisManager:
             self.pool = redis.ConnectionPool.from_url(
                 self.redis_url, decode_responses=True
             )
-            logger.info(f"✅ Redis connection pool created")
+            logger.info("✅ Redis connection pool created")
         except Exception as e:
             logger.error(f"🔥 Failed to connect to Redis: {e}")
             raise e

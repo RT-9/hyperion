@@ -15,7 +15,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import uuid
-from datetime import datetime
 
 from sqlalchemy import (
     UUID,
@@ -26,11 +25,11 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
-    Table
 )
 from sqlalchemy.orm import relationship
 
 from ..core.database import Base, TimestampMixin
+
 
 class Role(Base):
     """

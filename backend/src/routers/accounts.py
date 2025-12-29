@@ -18,8 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import (
     APIKeyCookie,
-    OAuth2PasswordBearer,
-    OAuth2PasswordRequestForm
+    OAuth2PasswordRequestForm,
 )
 
 from ..core import settings

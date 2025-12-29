@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pydantic import BaseModel, Field, UUID7
-from typing import Literal
+from pydantic import BaseModel, Field
 from ..models.fixtures import AttributeType
+
 
 class CreateShow(BaseModel):
     name: str
@@ -44,11 +44,12 @@ class CreateScene(BaseModel):
     name: str
     show_id: str
 
+
 class CreateFixturesInSceneRequest(BaseModel):
     fixture_id: str
     attribute: AttributeType
-    value:int
+    value: int
+
 
 class CreateFixturesInScene(CreateFixturesInSceneRequest):
-    scene_id:str
-  
+    scene_id: str

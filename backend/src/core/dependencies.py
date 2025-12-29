@@ -19,7 +19,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import hashlib
 from datetime import datetime, timezone
-from typing import Optional
 
 
 from ..models.accounts import ClientTokens, HyperionClients

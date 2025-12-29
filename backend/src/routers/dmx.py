@@ -15,18 +15,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
-import secrets
-import string
 
 import redis.asyncio as redis
 from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
-    Query,
     WebSocket,
     WebSocketDisconnect,
-    status
+    status,
 )
 
 from ..core.database import get_db
@@ -42,7 +39,9 @@ from ..services.dmx_protocol import DMXProtocol
 
 dmx_router = APIRouter(tags=["hyperion-dmx"])
 import logging
+
 logger = logging.getLogger("dmxenfine")
+
 
 @dmx_router.get("/api/dmx/otp-challenge")
 async def get_otp_challenge(user=Depends(require_admin), db=Depends(get_db)):
@@ -84,7 +83,6 @@ async def send_dmx_frame(
     """
     transport_payload = DMXProtocol.to_transport(frame.universe, frame.values)
 
-
     await redis_client.publish("hyperion:dmx:global", transport_payload)
 
     return {"status": "sent", "bytes_size": len(frame.values) + 2}
@@ -120,14 +118,13 @@ async def ws_show(
 
 @dmx_router.websocket("/ws/engine")
 async def ws_engine(
-    websocket: WebSocket,
-    redis_client: redis.Redis = Depends(get_redis)
+    websocket: WebSocket, redis_client: redis.Redis = Depends(get_redis)
 ):
     """
     Handle real-time DMX engine updates via WebSocket and broadcast via Redis.
 
-    This endpoint receives JSON frames from the frontend, transforms them 
-    into a packed binary format using the DMXProtocol, and publishes 
+    This endpoint receives JSON frames from the frontend, transforms them
+    into a packed binary format using the DMXProtocol, and publishes
     the result to the global Redis channel for all connected nodes.
 
     :param websocket: The active WebSocket connection from the frontend.
@@ -150,14 +147,15 @@ async def ws_engine(
             if channels:
                 # Pack the data into binary format and encode to Base64
                 # This mimics the logic in the /api/dmx/send-frame endpoint
-                transport_payload = DMXProtocol.to_transport(
-                    universe, channels)
+                transport_payload = DMXProtocol.to_transport(universe, channels)
 
                 # Broadcast the packed payload to the Redis distributor
                 await redis_client.publish("hyperion:dmx:global", transport_payload)
 
                 # Optional: Log the broadcast for debugging
-                logger.debug(f"Broadcasted universe {universe} with {len(channels)} channels")
+                logger.debug(
+                    f"Broadcasted universe {universe} with {len(channels)} channels"
+                )
 
     except WebSocketDisconnect:
         logger.info("🔌 Frontend Engine disconnected")

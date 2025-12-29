@@ -20,17 +20,13 @@ import secrets
 import string
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.exc import Conflict, Unauthorised
 from ..models.accounts import ClientTokens, HyperionClients, OTPModel
-from ..schemas.device_management import (
-    AuthenticatedDevice,
-    AuthenticateOTP,
-    GetOTP
-)
+from ..schemas.device_management import AuthenticatedDevice, AuthenticateOTP, GetOTP
 
 logger = logging.getLogger("device_service")
 
