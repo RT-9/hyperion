@@ -14,16 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import WebSocket, Depends, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import hashlib
 from datetime import datetime, timezone
-from typing import Optional
 
+from fastapi import Depends, Query, WebSocket, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.accounts import ClientTokens, HyperionClients
 from .database import get_db
+from ..models.accounts import ClientTokens, HyperionClients
 
 
 async def get_current_device(

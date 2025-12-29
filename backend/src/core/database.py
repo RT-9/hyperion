@@ -15,14 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import orjson
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from typing import AsyncGenerator
-from sqlalchemy.schema import MetaData
 from datetime import datetime
+from typing import AsyncGenerator
+
 from sqlalchemy import DateTime, func
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.schema import MetaData
+
 from . import settings
 
 engine = create_async_engine(
@@ -84,7 +84,7 @@ class Base(DeclarativeBase):
 
     metadata = MetaData(naming_convention=naming_convention)
 
-    # Global table arguments for MariaDB performance and compatibility
+    
     __table_args__ = {
         "mysql_engine": "InnoDB",
         "mysql_charset": "utf8mb4",
@@ -103,13 +103,13 @@ class TimestampMixin:
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
-        sort_order=999,  # Ensures it's usually at the end of the table
+        sort_order=999
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
-        sort_order=1000,
+        sort_order=1000
     )
 
 
@@ -124,6 +124,4 @@ async def init_db() -> None:
     :return: None
     """
     async with engine.begin() as conn:
-        if settings.DROP_DB and settings.DEBUG:
-            await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)

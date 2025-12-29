@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import WebSocket
-import redis.asyncio as redis
-import asyncio
 import logging
+
+import redis.asyncio as redis
+from fastapi import WebSocket
+
 from .dmx_protocol import DMXProtocol
 
 logger = logging.getLogger("hyperion")

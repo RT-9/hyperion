@@ -14,24 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from ..models.shows import Show
-from ..models.fixtures import Fixture
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import desc
-from ..schemas.show import (
-    CreateShow,
-    GrantShowfileAccess,
-    GetShowfiles,
-    GetShowfile,
-    CreateScene,
-    CreateFixturesInScene
-)
-from ..models.dmx.scenes import Scene, SceneFixtureValue
-
-
 import uuid
+
+from sqlalchemy import desc, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models.dmx.scenes import Scene, SceneFixtureValue
+from ..models.fixtures import Fixture
+from ..models.shows import Show
+from ..schemas.show import (
+    CreateFixturesInScene,
+    CreateScene,
+    CreateShow,
+    GetShowfile,
+    GetShowfiles,
+)
 
 
 class ShowService:
@@ -93,12 +91,13 @@ class ShowService:
         except IntegrityError:
             await self.db.rollback()
         return scene
-    async def add_fixtures_to_scene(self, fixture_definition:CreateFixturesInScene):
+
+    async def add_fixtures_to_scene(self, fixture_definition: CreateFixturesInScene):
         fix_def = SceneFixtureValue(
             scene_id=uuid.UUID(fixture_definition.scene_id),
             fixture_id=uuid.UUID(fixture_definition.fixture_id),
             attribute=fixture_definition.attribute,
-            value=fixture_definition.value
+            value=fixture_definition.value,
         )
         try:
             self.db.add(fix_def)
@@ -107,6 +106,6 @@ class ShowService:
         except IntegrityError:
             await self.db.rollback()
         return fix_def
-    
+
     async def create_cue(self):
-        
+        raise NotImplementedError

@@ -15,20 +15,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import uuid
-from sqlalchemy import (
-    Column,
-    String,
-    ForeignKey,
-    Table,
-    Boolean,
-    DateTime,
-    Integer,
-    Index,
-)
-from sqlalchemy import UUID
-from datetime import datetime
 
+from sqlalchemy import (
+    UUID,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+)
 from sqlalchemy.orm import relationship
+
 from ..core.database import Base, TimestampMixin
 
 
@@ -129,6 +128,10 @@ class ClientTokens(Base):
 
 
 class OTPModel(Base, TimestampMixin):
+    """Represents a temporal One-Time Password (OTP) challenge for authenticating DMX devices.
+    
+    The OTP is stored as a sha3_512 hash.
+    """
     __tablename__ = "otp_challenges"
     id = Column(Integer, primary_key=True, autoincrement=True)
     otp = Column(String(128), unique=True, index=True)

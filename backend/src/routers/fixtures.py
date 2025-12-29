@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter, Depends, status, HTTPException
-from ..schemas.fixtures import CreateFixtureType, CreateFixturePatch
-from ..services.fixture_service import FixtureService
+from fastapi import APIRouter, Depends, HTTPException
+
 from ..core.database import get_db
-from ..core.security.access import require_tech_lead, require_operator
+from ..core.security.access import require_operator, require_tech_lead
+from ..schemas.fixtures import CreateFixturePatch, CreateFixtureType
+from ..services.fixture_service import FixtureService
 
 fixture_router = APIRouter(tags=["fixtures"])
 

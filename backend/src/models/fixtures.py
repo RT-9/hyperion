@@ -8,17 +8,19 @@
 
 import enum
 import uuid
+
 from sqlalchemy import (
+    Boolean,
     Column,
+    Enum,
+    ForeignKey,
     Integer,
     String,
-    ForeignKey,
-    Boolean,
-    Enum,
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from ..core.database import Base
 
 
@@ -102,9 +104,9 @@ class FixtureType(Base):
 
     __tablename__ = "fixture_types"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid7)
+    id = Column(UUID, primary_key=True, index=True, default=uuid.uuid7)
     manufacturer_id = Column(
-        UUID(as_uuid=True), ForeignKey("manufacturers.id"), nullable=False
+        UUID, ForeignKey("manufacturers.id"), nullable=False
     )
 
     model = Column(String(100), nullable=False)
@@ -177,12 +179,12 @@ class Fixture(Base):
 
     __tablename__ = "fixtures"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid7)
-    show_id = Column(UUID(as_uuid=True), ForeignKey("shows.id"), nullable=False)
+    id = Column(UUID, primary_key=True, index=True, default=uuid.uuid7)
+    show_id = Column(UUID, ForeignKey("shows.id"), nullable=False)
     fid = Column(Integer, nullable=False, unique=False)
     name = Column(String(100), nullable=False, unique=False)
     fixture_type_id = Column(
-        UUID(as_uuid=True), ForeignKey("fixture_types.id"), nullable=False
+        UUID, ForeignKey("fixture_types.id"), nullable=False
     )
 
     universe = Column(Integer, default=0, nullable=False)

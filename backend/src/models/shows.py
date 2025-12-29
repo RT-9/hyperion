@@ -15,16 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import uuid
-from datetime import datetime
 from sqlalchemy import (
     Column,
     String,
     ForeignKey,
-    Table,
-    Boolean,
-    DateTime,
-    Integer,
-    Text,
     UUID,
 )
 from sqlalchemy.orm import relationship
@@ -40,7 +34,7 @@ class Show(Base, TimestampMixin):
 
     __tablename__ = "shows"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid7)
+    id = Column(UUID, primary_key=True, index=True, default=uuid.uuid7)
     name = Column(String(100), nullable=False, unique=True)
     created_by = Column(ForeignKey("accounts.id"))
 

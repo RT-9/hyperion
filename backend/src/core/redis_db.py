@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from . import settings
-import redis.asyncio as redis
-from typing import AsyncIterator
 import logging
+from typing import AsyncIterator
 
-logger = logging.getLogger("hyperion")
+import redis.asyncio as redis
+
+from . import settings
+
+logger = logging.getLogger("hyperion.redis")
 
 
 class RedisManager:
@@ -49,7 +51,7 @@ class RedisManager:
             self.pool = redis.ConnectionPool.from_url(
                 self.redis_url, decode_responses=True
             )
-            logger.info(f"✅ Redis connection pool created")
+            logger.info("✅ Redis connection pool created")
         except Exception as e:
             logger.error(f"🔥 Failed to connect to Redis: {e}")
             raise e

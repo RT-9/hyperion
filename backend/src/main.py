@@ -14,18 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .core.redis_db import redis_manager
-from contextlib import asynccontextmanager
-from .routers.manufacturer import manufacturer_router
-from .routers.dmx import dmx_router
-from .routers.accounts import account_router
-from .routers.show import show_router
-from .routers.fixtures import fixture_router
-from .core.startup import startup
-from .core import settings
-from fastapi import FastAPI
-import uvicorn
 import logging
+
+import uvicorn
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from .core import settings
+from .core.redis_db import redis_manager
+from .core.startup import startup
+from .routers.accounts import account_router
+from .routers.dmx import dmx_router
+from .routers.fixtures import fixture_router
+from .routers.manufacturer import manufacturer_router
+from .routers.show import show_router
+from .routers.startup_router import startup_router
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -45,13 +49,23 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Hyperion DMX", debug=settings.DEBUG, lifespan=lifespan)
-
-
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows GET, POST, OPTIONS, etc.
+    allow_headers=["*"],
+)
 app.include_router(account_router)
 app.include_router(dmx_router)
 app.include_router(manufacturer_router)
 app.include_router(show_router)
 app.include_router(fixture_router)
+app.include_router(startup_router)
 if __name__ == "__main__":
     uvicorn.run(
         "src.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG

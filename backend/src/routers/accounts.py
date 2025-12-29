@@ -14,19 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from fastapi import Request
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import (
-    OAuth2PasswordBearer,
-    OAuth2PasswordRequestForm,
     APIKeyCookie,
+    OAuth2PasswordRequestForm,
 )
 
+from ..core import settings
 from ..core.database import get_db
-from ..services.accounts import AccountService
-from ..schemas.accounts import UserCreate, UserResponse, UserLogin, UserGet
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
+from ..schemas.accounts import UserCreate, UserGet, UserLogin, UserResponse
+from ..services.accounts import AccountService
 
 account_router = APIRouter(prefix="/api", tags=["accounts"])
 
@@ -90,7 +89,7 @@ async def post_login(
             value=refresh_token[0],
             httponly=True,
             expires=refresh_token[1],
-            secure=True,
+            secure=not settings.DEBUG,
             samesite="lax",
         )
         response.set_cookie(
@@ -98,11 +97,12 @@ async def post_login(
             value=access_token[0],
             httponly=True,
             expires=access_token[1],
-            secure=True,
+            secure=not settings.DEBUG,
             samesite="lax",
         )
         return response
     except Unauthorised as e:
+        print(e)
         raise HTTPException(
             status_code=401,
             detail=str(e),

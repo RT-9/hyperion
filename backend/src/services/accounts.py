@@ -14,20 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import asyncio
 import re
+import uuid
 from datetime import datetime, timedelta, timezone
-from jwt import encode, decode
+
+from jwt import decode, encode
 from pwdlib import PasswordHash
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core import settings
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
-from ..models.accounts import Accounts, UsedRefreshToken, Role
+from ..models.accounts import Accounts, Role, UsedRefreshToken
 from ..schemas.accounts import UserCreate, UserGet, UserLogin
-import uuid
-import asyncio
 
 # Password policy: 8-64 chars, at least one uppercase, one lowercase, one digit, and one special char.
 PATTERN = re.compile(
@@ -165,7 +166,7 @@ class AccountService:
         qry = (
             select(Accounts)
             .where(Accounts.username == user.username.lower())
-            .where(Accounts.is_active == True)
+            .where(Accounts.is_active)
         )
 
         res = await self.db.execute(qry)
@@ -257,6 +258,11 @@ class AccountService:
         qry = delete(UsedRefreshToken).where(UsedRefreshToken.expires_at < now)
         await self.db.execute(qry)
         await self.db.commit()
+
+    async def amount_users(self):
+        qry = select(func.count()).select_from(Accounts)
+        count = await self.db.execute(qry)
+        return count.scalar() or 0
 
     @staticmethod
     def encode_jwt(sub):

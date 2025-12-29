@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pydantic import BaseModel, UUID7, Field
-from ..models.fixtures import AttributeType
 from typing import List
+
+from pydantic import BaseModel, Field, UUID7
+
+from ..models.fixtures import AttributeType
 
 
 class FixtureChannelCreate(BaseModel):
