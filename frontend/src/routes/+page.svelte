@@ -51,7 +51,7 @@
             </div>
             <h3 class="text-white font-bold mb-2 text-xl">Zero Vendor Lock-in</h3>
             <p class="text-sm text-slate-300 leading-relaxed mb-4">
-                We don't sell parameters. <strong class="text-white">All 65,536 universes</strong> (2 Bytes) are unlocked by default. No license keys required.
+                We don't provide parameters. <strong class="text-white">All 65,536 universes</strong> (2 Bytes) are unlocked by default. No license keys required.
             </p>
             <div class="mt-auto pt-4 border-t border-white/10 text-xs text-slate-400 bg-white/5 -mx-6 -mb-6 p-4">
                 <strong class="text-cyan-400 block mb-1">Need more than 65,536 DMX universes?</strong>
