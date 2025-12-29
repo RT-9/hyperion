@@ -18,7 +18,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from ..schemas.fixtures import CreateFixtureType, CreateFixturePatch
 from ..services.fixture_service import FixtureService
 from ..core.database import get_db
-from ..core.security.access import require_tech_lead
+from ..core.security.access import require_tech_lead, require_operator
 
 fixture_router = APIRouter(tags=["fixtures"])
 
@@ -41,3 +41,10 @@ async def patch_fixture_endpoint(patch_data: CreateFixturePatch, db=Depends(get_
         return await service.patch_fixture(patch_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@fixture_router.get("/api/fixture-types")
+async def get_fixture_types(db=Depends(get_db), user=Depends(require_operator)):
+    service = FixtureService(db)
+    fixtures = await service.get_all_devices()
+    return fixtures

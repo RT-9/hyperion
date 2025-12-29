@@ -29,7 +29,7 @@ class FxTypes(enum.Enum):
 
 class EffectTemplate(Base):
     __tablename__ = "effect_templates"
-    id = Column(UUID, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid7)
     name = Column(String(64), unique=True)
     fx_type = Column(Enum(FxTypes))
 
@@ -38,13 +38,13 @@ class EffectTemplate(Base):
 
 class CueEffect(Base):
     __tablename__ = "cue_effects"
-    id = Column(UUID, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid7)
 
     cue_id = Column(UUID, ForeignKey("cues.id", ondelete="CASCADE"))
 
     template_id = Column(UUID, ForeignKey("effect_templates.id"))
 
-    fixture_group_id = Column(UUID, ForeignKey("fixture_groups.id"), nullable=False)
+    # fixture_group_id = Column(UUID, ForeignKey("fixture_groups.id"), nullable=False)
 
     parameters = Column(JSON, default=dict)
 

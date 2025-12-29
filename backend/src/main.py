@@ -37,6 +37,7 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await startup()
     redis_manager.connect()
     yield
 
@@ -47,7 +48,6 @@ app = FastAPI(title="Hyperion DMX", debug=settings.DEBUG, lifespan=lifespan)
 
 
 app.include_router(account_router)
-app.add_event_handler("startup", startup)
 app.include_router(dmx_router)
 app.include_router(manufacturer_router)
 app.include_router(show_router)

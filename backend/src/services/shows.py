@@ -15,10 +15,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from ..models.shows import Show
+from ..models.fixtures import Fixture
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.exc import IntegrityError
-from ..schemas.show import CreateShow, GrantShowfileAccess
+from sqlalchemy import desc
+from ..schemas.show import (
+    CreateShow,
+    GrantShowfileAccess,
+    GetShowfiles,
+    GetShowfile,
+    CreateScene,
+    CreateFixturesInScene
+)
+from ..models.dmx.scenes import Scene, SceneFixtureValue
+
+
+import uuid
 
 
 class ShowService:
@@ -35,5 +48,65 @@ class ShowService:
         except IntegrityError:
             await self.db.rollback()
 
-    async def grant_showfile_access(self, showfile_access: GrantShowfileAccess):
-        pass
+    async def get_showfiles(self, get_showfiles: GetShowfiles):
+        """
+        Fetch show files using either offset-based or keyset pagination.
+
+        :param get_showfiles: DTO containing page, limit, and optionally last_id.
+        :return: A sequence of Show objects.
+        """
+        effective_limit = min(get_showfiles.limit, 512)
+
+        qry = select(Show).order_by(desc(Show.id)).limit(effective_limit + 1)
+
+        calculated_offset = (get_showfiles.page - 1) * effective_limit
+        qry = qry.offset(calculated_offset)
+
+        result = await self.db.execute(qry)
+        showfiles = result.scalars().all()
+
+        return showfiles
+
+    async def get_patching(self, showfile: GetShowfile):
+        qry = (
+            select(Fixture)
+            .join(Show, Fixture.show_id == Show.id)
+            .where(
+                Fixture.show_id == uuid.UUID(showfile.id),
+                Show.created_by == uuid.UUID(showfile.user),
+            )
+            .order_by(desc(Fixture.id))
+        )
+        result = await self.db.execute(qry)
+        return result.scalars().all()
+
+    async def create_scene(self, scene_definition: CreateScene):
+        scene = Scene(
+            show_id=uuid.UUID(scene_definition.show_id, version=7),
+            sid=scene_definition.sid,
+            name=scene_definition.name,
+        )
+        try:
+            self.db.add(scene)
+            await self.db.commit()
+            await self.db.refresh(scene)
+        except IntegrityError:
+            await self.db.rollback()
+        return scene
+    async def add_fixtures_to_scene(self, fixture_definition:CreateFixturesInScene):
+        fix_def = SceneFixtureValue(
+            scene_id=uuid.UUID(fixture_definition.scene_id),
+            fixture_id=uuid.UUID(fixture_definition.fixture_id),
+            attribute=fixture_definition.attribute,
+            value=fixture_definition.value
+        )
+        try:
+            self.db.add(fix_def)
+            await self.db.commit()
+            await self.db.refresh(fix_def)
+        except IntegrityError:
+            await self.db.rollback()
+        return fix_def
+    
+    async def create_cue(self):
+        
