@@ -1,11 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
 
-    /**
-     * Navigation handler to the console route.
-     *
-     * :returns: A promise for the navigation action.
-     */
+
     async function enterApp() {
         await goto('/console');
     }
