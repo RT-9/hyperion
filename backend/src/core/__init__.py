@@ -15,6 +15,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from .config import Settings
-from pathlib import Path
+
 
 settings = Settings()  # type: ignore

@@ -166,7 +166,7 @@ class AccountService:
         qry = (
             select(Accounts)
             .where(Accounts.username == user.username.lower())
-            .where(Accounts.is_active == True)
+            .where(Accounts.is_active)
         )
 
         res = await self.db.execute(qry)

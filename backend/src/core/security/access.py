@@ -14,18 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from ...models.accounts import Accounts
-from ...services.accounts import AccountService
-from typing import List
 from enum import Enum
-from fastapi import Depends
-from ...routers.accounts import cookie_scheme
-from ..database import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import joinedload
+from typing import List
 from uuid import UUID
-from fastapi import HTTPException
+
+from fastapi import Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+
+from ..database import get_db
+from ...models.accounts import Accounts
+from ...routers.accounts import cookie_scheme
+from ...services.accounts import AccountService
 
 
 class UserRole(str, Enum):

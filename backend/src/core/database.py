@@ -15,14 +15,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import orjson
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from typing import AsyncGenerator
-from sqlalchemy.schema import MetaData
 from datetime import datetime
-from sqlalchemy import DateTime, func
-from . import settings
+from typing import AsyncGenerator
 
+from sqlalchemy import DateTime, func
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine
+)
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.schema import MetaData
+
+from . import settings
 engine = create_async_engine(
     settings.db_url,
     echo=False,

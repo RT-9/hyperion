@@ -19,4 +19,15 @@ from .dmx.cues import Cue
 from .dmx.effects import CueEffect, EffectTemplate
 from .dmx.scenes import Scene
 from .fixtures import Fixture, FixtureChannel, FixtureType, Manufacturer
-from .shows import Show, ShowAccess
+
+__all__ = [
+    "Base",
+    "Cue",
+    "CueEffect",
+    "EffectTemplate",
+    "Fixture",
+    "FixtureChannel",
+    "FixtureType",
+    "Manufacturer",
+    "Scene",
+]

@@ -14,14 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .database import init_db, async_session_factory
-from ..models.accounts import Role, UsedRefreshToken
-from ..models.fixtures import Manufacturer
 import logging
 from datetime import datetime, timezone
+
 from sqlalchemy import delete, text
-from .security.access import UserRole
+from sqlalchemy.exc import IntegrityError
+
 from . import settings
+from .database import async_session_factory, init_db
+from .security.access import UserRole
+from ..models.accounts import Role, UsedRefreshToken
+from ..models.fixtures import Manufacturer
 
 logger = logging.getLogger("hyperion.startup")
 
@@ -35,7 +38,7 @@ async def role_creation():
                 new_role = Role(name=role.value, system_role=True)
                 db.add(new_role)
                 await db.commit()
-            except:
+            except IntegrityError:
                 await db.rollback()
                 logger.warning(f"Role {role} already exists... Skipping...")
 

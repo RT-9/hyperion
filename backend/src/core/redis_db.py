@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from . import settings
-import redis.asyncio as redis
-from typing import AsyncIterator
 import logging
+from typing import AsyncIterator
+
+import redis.asyncio as redis
+
+from . import settings
 
 logger = logging.getLogger("hyperion")
 

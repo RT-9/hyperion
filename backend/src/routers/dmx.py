@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+import logging
 import asyncio
 
 import redis.asyncio as redis
@@ -38,9 +38,9 @@ from ..services.dmx_processor import DMXProcessor
 from ..services.dmx_protocol import DMXProtocol
 
 dmx_router = APIRouter(tags=["hyperion-dmx"])
-import logging
 
-logger = logging.getLogger("dmxenfine")
+
+logger = logging.getLogger("dmx")
 
 
 @dmx_router.get("/api/dmx/otp-challenge")
