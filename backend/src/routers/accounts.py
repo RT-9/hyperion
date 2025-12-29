@@ -50,7 +50,6 @@ async def post_create_account(account: UserCreate, session=Depends(get_db)):
 
 @account_router.get("/accounts", response_model=UserResponse)
 async def get_signin_account(session=Depends(get_db), token=Depends(cookie_scheme)):
-    print(token)
     payload = AccountService.decode_jwt(token)
 
     user_service = AccountService(session)
@@ -80,7 +79,6 @@ async def post_login(
     login_data = UserLogin(username=form.username, password=form.password)
     try:
         access_token, refresh_token = await user_service.authorise_user(login_data)
-        print(access_token[0])
         response = JSONResponse(
             {"access_token": access_token[0], "token_type": "bearer"}
         )
@@ -102,14 +100,12 @@ async def post_login(
         )
         return response
     except Unauthorised as e:
-        print(e)
         raise HTTPException(
             status_code=401,
             detail=str(e),
             headers={"WWW-Authenticate": "Bearer"},
         )
     except Exception as e:
-        print(e)
         raise HTTPException(500)
 
 

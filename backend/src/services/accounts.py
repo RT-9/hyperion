@@ -18,6 +18,7 @@ import asyncio
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
+import logging
 
 from jwt import decode, encode
 from pwdlib import PasswordHash
@@ -35,6 +36,7 @@ PATTERN = re.compile(
     r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,64}$'
 )
 
+logger = logging.getLogger("hyperion.accounts")
 
 class AccountService:
     """
@@ -250,7 +252,7 @@ class AccountService:
             await self.db.commit()
             return self.encode_jwt(sub=user.id)
         except Exception as e:
-            print(e)
+            logger.error(str(e))
             raise Unauthorised("Invalid or expired refresh token.")
 
     async def delete_refresh_tokens(self):
@@ -300,7 +302,7 @@ class AccountService:
             {
                 "exp": now + timedelta(days=7, seconds=3),
                 "jti": str(uuid.uuid7()),
-                "scope": "refresh",  # Crucial for the refresh_session check
+                "scope": "refresh", 
             }
         )
 
@@ -317,7 +319,6 @@ class AccountService:
 
     @staticmethod
     def decode_jwt(token):
-        print("damn", token)
         return decode(
             token, settings.JWT_SECRET, algorithms=["HS512"], issuer="hyperion_backend"
         )
