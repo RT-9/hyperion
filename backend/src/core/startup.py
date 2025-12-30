@@ -95,13 +95,21 @@ async def setup_database_events():
             DO
                 DELETE FROM client_tokens
                 WHERE  expires_at < NOW();
-            
+                
+            CREATE EVENT IF NOT EXISTS delete_expired_mcp_tokens
+            ON SCHEDULE EVERY 1 HOUR
+            COMMENT 'Removes expired MCP Tokens from the database'
+            DO
+                DELETE FROM mcp_tokens
+                WHERE expires_at < NOW();
             """
             if settings.DEBUG:
                 event_query = (
-                    """DROP EVENT IF EXISTS discard_expired_refresh_tokens;
+                    """
+            DROP EVENT IF EXISTS discard_expired_refresh_tokens;
             DROP EVENT IF EXISTS delete_expired_otp;
             DROP EVENT IF EXISTS delete_expired_device_tokens;
+            DROP EVENT IF EXISTS delete_expired_mcp_tokens;
             """
                     + event_query
                 )
