@@ -109,9 +109,9 @@ async def ws_show(
             await dmxp.json_data(data=j)
 
     except WebSocketDisconnect:
-        print(f"Node {device.name} disconnected")
+        logger.info(f"Node {device.name} disconnected")
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(str(e))
     finally:
         redis_task.cancel()
 
@@ -139,8 +139,7 @@ async def ws_engine(
             data = await websocket.receive_json(mode="text")
             data = dict(data)
             print(data)
-            # Extract universe and channel values
-            # Svelte sends: {"universe": 0, "channels": [...]}
+           
             universe = data.get("universe", 0)
             channels = data.get("channels", [])
 

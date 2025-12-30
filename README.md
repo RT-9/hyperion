@@ -1,14 +1,33 @@
 
-# Hyperion
+# Hyperion – A reactive, MCP, open-source DMX orchestrator.
 
-![License](https://img.shields.io/badge/license-GPLv3%2B-blue.svg)
-![Python](https://img.shields.io/badge/python-3.14%2B-blue)
+![GitHub License](https://img.shields.io/github/license/Arian-Ott/hyperion)
+[![Made with Python](https://img.shields.io/badge/Python->=3.14-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
+![Static Badge](https://img.shields.io/badge/mariadb-%3E%3D11.4-blue?logo=mariadb)
+![Static Badge](https://img.shields.io/badge/redis-%3E%3D8.2.2-red?logo=redis)
 ![Frontend](https://img.shields.io/badge/frontend-Svelte-orange)
 ![Status](https://img.shields.io/badge/status-Alpha-red)
 
-**Hyperion** is a modern, web-based DMX control system designed to bridge the gap between professional consoles and hobbyist tools.
+## The Why
 
-It features a distributed architecture, separating the "Brain" (server logic) from the "Node" (DMX output), allowing for flexible deployments on Raspberry Pis, generic PCs, or servers.
+The lighting control industry is currently dominated by expensive, proprietary ecosystems that often enforce artificial limitations through hardware dongles and closed-source software. Many existing solutions are built upon legacy architectural patterns—monolithic C++ codebases that have been ported forward for decades without rethinking the underlying data flow.
+
+**Hyperion** was developed to apply modern backend engineering principles to DMX512, shifting away from "black box" controllers towards a transparent, reactive engine that prioritises data integrity and architectural freedom.
+
+## The Problem: Proprietary Lock-in & Legacy Loops
+
+* Hardware Entrapment: Most entry-level controllers are non-functional without specific, vendor-locked interfaces, creating a "pay-to-play" barrier for creators. If the vendor discontinues the proprietary software, your physical device is electric trash.
+* Architectural Opacity: Proprietary software and the lack of APIs prevents you to use your DMX devices outside the scope of lighting consoles without expensive inefficient tweaks.
+* Limited amount of customisation: Once you buy a lightning console or software, you have a very outdated complicated UI which requires a lot of effort to learn. Customising the UI or behaviour of the console to your workflow is only possible to some extend. 
+* Super expensive hardware: Mid-level lightning controllers cost around 700-2000€. High-End controllers can cost well above 65.000€ (excluding shipping, ofc :D ). Cheaper options below 700€ exists but they come with massive drawbacks and limitations which make them less attractive to use at a party or small event.
+
+## The Solution: A Reactive Orchestrator
+
+Hyperion was born to prove that building a lighting software does not require expensive tech. 
+
+
+
+
 
 ## ✨ Features
 

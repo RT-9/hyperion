@@ -24,19 +24,30 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     MARIADB_USER: str = "hyperion"
     MARIADB_PASSWORD: str = "hyperion"
+
     DB_HOST: str = "127.0.0.1"
     DB_PORT: int = 3306
     DATABASE: str = "hyperion"
-    model_config = SettingsConfigDict(extra="ignore", env_file=".env")
     DROP_DB: bool = False
-    REDIS_URL: str = "redis://hyperion:hyperion@127.0.0.1:6379"
+
+    REDIS_USER: str = "hyperion"
+    REDIS_PASSWORD: str = "hyperion"
+    REDIS_PORT: int = 6379
+    REDIS_HOST: str = "127.0.0.1"
+
+    model_config = SettingsConfigDict(extra="ignore", env_file=".env")
 
     @property
     def db_url(self):
         """Returns mariadb database url.
-        
+
         :returns: Correct database url with asyncmy driver.
         :rtype: str
         """
-        
+
         return f"mysql+asyncmy://{self.MARIADB_USER}:{self.MARIADB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DATABASE}"
+
+    @property
+    def redis_url(self):
+        return f"redis://{self.REDIS_USER}:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}"
+

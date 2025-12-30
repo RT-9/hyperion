@@ -105,9 +105,7 @@ class FixtureType(Base):
     __tablename__ = "fixture_types"
 
     id = Column(UUID, primary_key=True, index=True, default=uuid.uuid7)
-    manufacturer_id = Column(
-        UUID, ForeignKey("manufacturers.id"), nullable=False
-    )
+    manufacturer_id = Column(UUID, ForeignKey("manufacturers.id"), nullable=False)
 
     model = Column(String(100), nullable=False)
     mode_name = Column(String(50), default="Standard")
@@ -183,9 +181,7 @@ class Fixture(Base):
     show_id = Column(UUID, ForeignKey("shows.id"), nullable=False)
     fid = Column(Integer, nullable=False, unique=False)
     name = Column(String(100), nullable=False, unique=False)
-    fixture_type_id = Column(
-        UUID, ForeignKey("fixture_types.id"), nullable=False
-    )
+    fixture_type_id = Column(UUID, ForeignKey("fixture_types.id"), nullable=False)
 
     universe = Column(Integer, default=0, nullable=False)
     start_address = Column(Integer, nullable=False)
