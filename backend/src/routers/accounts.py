@@ -23,10 +23,11 @@ from fastapi.security import (
 
 from ..core import settings
 from ..core.database import get_db
+from ..core.security.access import require_operator
 from ..core.exc import DuplicateEntryError, InvalidPasswordError, Unauthorised
 from ..schemas.accounts import UserCreate, UserGet, UserLogin, UserResponse
 from ..services.accounts import AccountService
-
+from ..services.mcp_auth import MCPAuthService
 account_router = APIRouter(prefix="/api", tags=["accounts"])
 
 cookie_scheme = APIKeyCookie(name="access_token")
@@ -156,3 +157,13 @@ async def post_refresh_token(request: Request, session=Depends(get_db)):
 
     except Unauthorised as e:
         raise HTTPException(status_code=401, detail=str(e))
+
+@account_router.post("/accounts/mcp")
+async def post_create_mcp_token(db=Depends(get_db), current_user=Depends(require_operator)):
+    try:
+        service = MCPAuthService(db)
+        mcp_token = await service.create_mcp_token(current_user.id)
+        return mcp_token
+    except:
+        raise HTTPException(500)
+    

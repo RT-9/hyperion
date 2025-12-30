@@ -19,7 +19,7 @@ from typing import Optional
 from uuid import UUID
 
 from faker import Faker
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, FutureDatetime
 
 
 fake = Faker(locale=["en_GB"])
@@ -79,3 +79,8 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
+
+
+class MCPTokenResponse(BaseModel):
+    token:str
+    exp: FutureDatetime

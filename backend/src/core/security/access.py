@@ -19,14 +19,16 @@ from typing import List
 from uuid import UUID
 
 from fastapi import Depends, HTTPException
+from fastapi.security import APIKeyCookie
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from ..database import get_db
 from ...models.accounts import Accounts
-from ...routers.accounts import cookie_scheme
 from ...services.accounts import AccountService
+
+cookie_scheme = APIKeyCookie(name="access_token")
 
 
 class UserRole(str, Enum):

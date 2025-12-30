@@ -67,7 +67,8 @@ class Accounts(Base, TimestampMixin):
     role_id = Column(UUID, ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False)
     is_active = Column(Boolean, default=True)
     role = relationship("Role", back_populates="accounts", lazy="joined")
-
+    tokens = relationship("MCPToken", backref="account",
+                          cascade="all, delete-orphan")
 
 class UsedRefreshToken(Base):
     """
@@ -138,3 +139,12 @@ class OTPModel(Base, TimestampMixin):
     otp = Column(String(128), unique=True, index=True)
     expires_at = Column(DateTime, nullable=False)
     __table_args__ = (Index("ix_otp_hash", "otp"),)
+
+
+class MCPToken(Base, TimestampMixin):
+    __tablename__ = "mcp_tokens"
+    id = Column(UUID, primary_key=True, default=uuid.uuid7)
+    account_id = Column(UUID, ForeignKey("accounts.id"))
+    token = Column(String(128), unique=True, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    
