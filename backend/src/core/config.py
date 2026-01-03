@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_HOST: str = "127.0.0.1"
 
-    model_config = SettingsConfigDict(extra="ignore", env_file=".env")
+    model_config = SettingsConfigDict(extra="ignore", env_file=("../.env", ".env"))
 
     @property
     def db_url(self):

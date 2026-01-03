@@ -4,22 +4,63 @@ services:
     container_name: mariadb_server
     ports:
       - "3306:3306"
-    environment:
-      - MARIADB_ROOT_PASSWORD=hyperion
-      - MARIADB_DATABASE=hyperion
-      - MARIADB_USER=hyperion
-      - MARIADB_PASSWORD=hyperion
+    env_file:
+      - .env
     restart: unless-stopped
     volumes:
-      - mariadb_data:/var/lib/mysql  
+      - mariadb_data:/var/lib/mysql
 
   redis:
     image: redis:8.4
     container_name: redis_cache
     ports:
       - "6379:6379"
-    command: redis-server --requirepass hyperion
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+    env_file:
+      - .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: backend_app
+    ports:
+      - "2468:2468"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=database
+      - REDIS_HOST=redis
+    depends_on:
+      - database
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_html
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    
+  pma:
+      image: phpmyadmin/phpmyadmin
+      container_name: phpmyadmin_gui
+      ports:
+        - "8081:80" 
+      environment:
+        - PMA_HOST=database 
+        - PMA_PORT=3306
+        - UPLOAD_LIMIT=64M
+      depends_on:
+        - database
+      restart: unless-stopped
 
 volumes:
   mariadb_data:

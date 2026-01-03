@@ -10,6 +10,10 @@ We follow a self-directed workflow. You do not need to wait for an official assi
 2. **Declare your interest:** Once you decide to work on an issue, please leave a brief comment (e.g., *"I'm looking into this"*) to inform others and avoid duplicated effort.
 3. **Ask for help:** If you have questions regarding the implementation or the codebase, feel free to ask directly within the relevant issue. We are happy to provide guidance.
 
+### Starting Hyperion backend
+
+Hyperion provides two ways of deploying
+
 ## Technical Standards
 
 ### Documentation
@@ -50,17 +54,6 @@ To verify that DMX data is being transmitted correctly over the network, we reco
 Since this is a minimal MVP, there is no UI existing which makes things easier.
 
 
-1. Launch Hyperion (backend and frontend) on your computer
-2. Navigate to http://127.0.0.1:2468/docs and login with an admin account
-3. Launch Hyperion-node on your computer. (you will need to generate an OTP token which you will use to register the "node")
-4. Navigate to http://127.0.0.1
-5. enter the IP of your computer (e.g. 10.0.2.5 or 192.168.1.XXX)
-6. Enter the name of your node
-7. Enter the OTP
-8. Confirm
-9. Launch artnetview on your computer.
-10. Open the website at http://localhost:5173/console
-11. Move a fader.
 
 Monitor Universes: Observe the grid to ensure that the correct Art-Net universes are being broadcast.
 Verify Values: Trigger a change in the software and confirm that the corresponding faders or channel values in artnetview react as expected.

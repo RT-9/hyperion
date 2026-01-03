@@ -4,7 +4,7 @@ let stressActive = false;
 let stressInterval = null;
 
 const MAX_STRESS_UNIVERSES = 11; // 1 bis 100
-const socket = new WebSocket("ws://127.0.0.1:2468/ws/engine");
+const socket = new WebSocket("ws://" + window.location.host + "/ws/engine");
 const statusEl = document.getElementById("status");
 const universeInput = document.getElementById("universe-selector");
 const stressBtn = document.getElementById("stress-btn");
