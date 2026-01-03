@@ -40,6 +40,7 @@ class RedisManager:
         """
         self.redis_url = settings.redis_url
         self.pool: redis.ConnectionPool | None = None
+        self.connect()
 
     def connect(self):
         """

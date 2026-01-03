@@ -1,51 +1,25 @@
 services:
-  postgres:
-    image: postgres:18.1
-    container_name: hyperion-postgres
+  database:
+    image: mariadb:11.4
+    container_name: mariadb_server
     ports:
-      - "5432:5432"
-    restart: unless-stopped
+      - "3306:3306"
     environment:
-      - POSTGRES_USER=hyperion
-      - POSTGRES_PASSWORD=hyperion
-      - DATABASE=hyperion
-    networks:
-      - server_network
-    shm_size: 128mb
-    volumes:
-      - hyperion-postgres:/var/lib/postgresql
-
-  server:
-    build:
-      context: .
-      dockerfile: src/server/Dockerfile
-    container_name: hyperion-server
-    depends_on:
-      - postgres
+      - MARIADB_ROOT_PASSWORD=hyperion
+      - MARIADB_DATABASE=hyperion
+      - MARIADB_USER=hyperion
+      - MARIADB_PASSWORD=hyperion
     restart: unless-stopped
+    volumes:
+      - mariadb_data:/var/lib/mysql  
 
-    networks:
-      - server_network
+  redis:
+    image: redis:8.4
+    container_name: redis_cache
     ports:
-      - 9000:9000
-  pgadmin:
-      image: dpage/pgadmin4:latest
-      container_name: hyperion-pgadmin
-      restart: unless-stopped
-      depends_on: 
-        - postgres
-      environment:
-        PGADMIN_DEFAULT_EMAIL: "admin@admin.com" 
-        PGADMIN_DEFAULT_PASSWORD: "admin"
-      ports:
-        - "5050:80"
-      networks:
-        - server_network
-      volumes:
-        - pgadmin-data:/var/lib/pgadmin
-networks:
-  server_network:
+      - "6379:6379"
+    command: redis-server --requirepass hyperion
+    restart: unless-stopped
 
 volumes:
-  hyperion-postgres:
-  pgadmin-data:
+  mariadb_data:

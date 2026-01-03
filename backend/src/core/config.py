@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     DATABASE: str = "hyperion"
     DROP_DB: bool = False
 
-    REDIS_USER: str = "hyperion"
+    REDIS_USER: str = "default"
     REDIS_PASSWORD: str = "hyperion"
     REDIS_PORT: int = 6379
     REDIS_HOST: str = "127.0.0.1"
@@ -50,4 +50,3 @@ class Settings(BaseSettings):
     @property
     def redis_url(self):
         return f"redis://{self.REDIS_USER}:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}"
-

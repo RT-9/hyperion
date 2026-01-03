@@ -25,6 +25,7 @@ from .database import async_session_factory, init_db
 from .security.access import UserRole
 from ..models.accounts import Role, UsedRefreshToken
 from ..models.fixtures import Manufacturer
+from .redis_db import redis_manager
 
 logger = logging.getLogger("hyperion.startup")
 
@@ -267,7 +268,13 @@ async def seed_manufacturers():
                 continue
         await db.commit()
 
-
+async def redis_startup_ping():
+    client = redis_manager.get_client()
+    ping = await client.ping()
+    if not ping:
+        raise RuntimeError("Could not PING redis")
+    logger.info("Redis PONG")
+    
 async def startup():
     """Startup procedure.
 
@@ -275,8 +282,10 @@ async def startup():
     It handles database creation and seeding.
 
     """
+    
     await init_db()
     await role_creation()
     await setup_database_events()
     await seed_manufacturers()
     await delete_old_tokens()
+    await redis_startup_ping()
