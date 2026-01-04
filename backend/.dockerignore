@@ -1,6 +1,21 @@
-.venv
+# Python Caches
 __pycache__/
-.gitignore
-README.md
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.venv/
+env/
+venv/
+
+# Environment
+.env
 .python-version
-*.env.example
+
+# Git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore

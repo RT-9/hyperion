@@ -138,8 +138,7 @@ async def ws_engine(
             # Receive JSON data directly from the Svelte frontend
             data = await websocket.receive_json(mode="text")
             data = dict(data)
-            print(data)
-           
+          
             universe = data.get("universe", 0)
             channels = data.get("channels", [])
 

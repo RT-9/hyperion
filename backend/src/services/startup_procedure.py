@@ -47,5 +47,5 @@ class StartupService:
         if user_count := await self.admin_created():
             logger.info(f"{user_count} admin accounts already exist")
             return False
-            
+
         return True

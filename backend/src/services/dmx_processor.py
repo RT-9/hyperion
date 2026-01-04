@@ -46,7 +46,7 @@ class DMXProcessor:
 
         :param data: The JSON payload received.
         """
-        print(f"Received from Node: {data}")
+
 
         await self.ws.send_text("ACK_FROM_SERVER")
 

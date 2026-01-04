@@ -1,0 +1,15 @@
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# CSS Maps & Preprocessors
+assets/css/*.map
+assets/css/*.sass
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Git
+.gitignore
