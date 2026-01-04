@@ -9,10 +9,7 @@
 
 ## PoC
 
-<video width="1280" controls>
-  <source src="docs/videos/Hyperion-PoC-small.mp4" type="video/mp4">
-</video>
-
+![PoC](docs/videos/Hyperion-PoC.gif)
 
 ## The Why
 
