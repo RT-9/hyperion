@@ -1,12 +1,18 @@
 
-# Hyperion – A reactive, MCP, open-source DMX orchestrator.
+# Hyperion – A reactive, web based open-source DMX orchestrator.
 
 ![GitHub License](https://img.shields.io/github/license/Arian-Ott/hyperion)
 [![Made with Python](https://img.shields.io/badge/Python->=3.14-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
 ![Static Badge](https://img.shields.io/badge/mariadb-%3E%3D11.4-blue?logo=mariadb)
 ![Static Badge](https://img.shields.io/badge/redis-%3E%3D8.2.2-red?logo=redis)
-![Frontend](https://img.shields.io/badge/frontend-Svelte-orange)
 ![Status](https://img.shields.io/badge/status-Alpha-red)
+
+## PoC
+
+<video width="1280" controls>
+  <source src="docs/videos/Hyperion-PoC.mp4" type="video/mp4">
+</video>
+
 
 ## The Why
 
@@ -23,51 +29,33 @@ The lighting control industry is currently dominated by expensive, proprietary e
 
 ## The Solution: A Reactive Orchestrator
 
-Hyperion was born to prove that building a lighting software does not require expensive tech. 
-
-
-
-
+Hyperion was born to prove that building a lighting software does not require expensive tech. If you have an old raspberry pi or laptop, you can run hyperion on it.
+Just hook up any artnet dongle you find online (quality varies), and you are good to go. 
 
 ## ✨ Features
 
-* **Modern Interface:** Touch-first web UI built with Svelte & Vite.
+* **Modern Interface:** (Planned)
 * **Distributed Architecture:** Run the backend on your laptop and the DMX output on a Raspberry Pi over the network.
-* **Hardware Agnostic:** Supports ArtNet, sACN, USB-DMX (Enttec/uDMX), and direct GPIO (Raspberry Pi).
+* **Hardware Agnostic:** Supports Artnet and sACN. Any hardware that understands artnet, can run hyperion.
 * **API First:** Full control via REST API and WebSockets (FastAPI).
 
 ## 🚀 Architecture
 
 Hyperion consists of two main components:
 
-1.  **Core (Brain):** Manages the database, API, and lighting logic.
-2.  **Node (Runner):** A lightweight service that receives frame data and outputs DMX signals.
+1.  **Hyperion** Manages the database, API, and lighting logic.
+2.  **Hyperion-core** A lightweight service that receives frame data and outputs DMX signals.
 
 ## 🛠️ Installation (Development)
 
 ### Prerequisites
+
 * Python 3.14+
-* Node.js & npm
 * uv or standard pip
 
 ### Backend Setup
 
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate  # or .\.venv\Scripts\activate on Windows
-pip install .
-
-```
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-
-```
+Follow the guide in [Getting Started](GETTING_STARTED.md)
 
 ## 📄 License
 
